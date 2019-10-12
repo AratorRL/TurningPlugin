@@ -1,6 +1,7 @@
 #pragma once
 #pragma comment (lib, "bakkesmod.lib")
 
+#include "utils.h"
 #include "Drawer.h"
 #include "Logger.h"
 #include "Configuration.h"
@@ -13,8 +14,8 @@ public:
     virtual void onUnload();
 
 private:
-    Drawer* drawer;
-    Logger* logger;
+    GlobalObjects glob;
+
     Configuration* currentConfig;
 
     void hookPhysicsTick(std::function<void(std::string eventName)> callback);

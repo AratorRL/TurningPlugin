@@ -20,7 +20,7 @@ void TurningPlugin::init()
     }
     else
     {
-        logger->log("No configuration defined.");
+        glob.logger->log("No configuration defined.");
     }
 }
 
@@ -32,10 +32,13 @@ void TurningPlugin::onLoad()
     cvarManager->registerNotifier("turning_test", std::bind(&TurningPlugin::turningTest, this), "", PERMISSION_FREEPLAY);
     cvarManager->registerNotifier("turning_init", std::bind(&TurningPlugin::init, this), "", PERMISSION_FREEPLAY);
 
-    logger = new Logger(cvarManager);
-    drawer = new Drawer(gameWrapper);    
-    gameWrapper->RegisterDrawable(std::bind(&Drawer::draw, drawer, std::placeholders::_1));
-    currentConfig = new StationaryBallConfiguration(gameWrapper, logger);
+    glob.logger = new Logger(cvarManager);
+    glob.drawer = new Drawer(gameWrapper, glob.logger);    
+    glob.game = this->gameWrapper;
+
+    gameWrapper->RegisterDrawable(std::bind(&Drawer::draw, glob.drawer, std::placeholders::_1));
+
+    currentConfig = new StationaryBallConfiguration(glob);
     currentConfig->setAcceptingState({ 0, 0, 0 });
 
 

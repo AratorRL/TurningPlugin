@@ -48,12 +48,12 @@ void StationaryBallConfiguration::tick()
 
     if (util::isInRotRange(currentRot, acceptingState, 2000))
     {
-        logger->log("ACCEPT");
+        //logger->log("ACCEPT");
         end();
     }
     else
     {
-        logger->log("NO ACCEPT");
+        //logger->log("NO ACCEPT");
     }
 
 }
@@ -61,5 +61,6 @@ void StationaryBallConfiguration::tick()
 void StationaryBallConfiguration::end()
 {
     unhookPhysicsTick();
+    visualizer->render();
     logger->log("end");
 }

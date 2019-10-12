@@ -17,6 +17,7 @@ private:
     Logger* logger;
     Configuration* currentConfig;
 
+    void hookPhysicsTick(std::function<void(std::string eventName)> callback);
     void turningTest();
     void init();
     void OnHit();

@@ -1,5 +1,20 @@
 #include "Configuration.h"
 
+void Configuration::hookPhysicsTick()
+{
+    game->HookEvent("Function TAGame.Car_TA.SetVehicleInput", std::bind(&Configuration::tick, this));
+}
+
+void Configuration::unhookPhysicsTick()
+{
+    game->UnhookEvent("Function TAGame.Car_TA.SetVehicleInput");
+}
+
+void Configuration::setAcceptingState(Rotator rot)
+{
+    this->acceptingState = rot;
+}
+
 void StationaryBallConfiguration::init()
 {
     logger->log("initializing car and ball");
@@ -23,4 +38,28 @@ void StationaryBallConfiguration::init()
     car.SetRotation({ -179, 12525, 0 });
 
     car.GetDodgeComponent().SetActive(false);
+
+    hookPhysicsTick();
+}
+
+void StationaryBallConfiguration::tick()
+{
+    Rotator currentRot = util::getCarRotation(game);
+
+    if (util::isInRotRange(currentRot, acceptingState, 2000))
+    {
+        logger->log("ACCEPT");
+        end();
+    }
+    else
+    {
+        logger->log("NO ACCEPT");
+    }
+
+}
+
+void StationaryBallConfiguration::end()
+{
+    unhookPhysicsTick();
+    logger->log("end");
 }

@@ -6,6 +6,12 @@
 BAKKESMOD_PLUGIN(TurningPlugin, "Turning Plugin", "1.0", PLUGINTYPE_FREEPLAY);
 
 
+void TurningPlugin::hookPhysicsTick(std::function<void(std::string eventName)> callback)
+{
+    gameWrapper->HookEvent("Function TAGame.Car_TA.SetVehicleInput", callback);
+}
+
+
 void TurningPlugin::init()
 {
     if (currentConfig)
@@ -30,6 +36,12 @@ void TurningPlugin::onLoad()
     drawer = new Drawer(gameWrapper);    
     gameWrapper->RegisterDrawable(std::bind(&Drawer::draw, drawer, std::placeholders::_1));
     currentConfig = new StationaryBallConfiguration(gameWrapper, logger);
+    currentConfig->setAcceptingState({ 0, 0, 0 });
+
+
+    hookPhysicsTick([this](std::string eventName) {
+        this->currentConfig->tick();
+    });
 
     // gameWrapper->HookEvent("Function TAGame.Ball_TA.OnRigidBodyCollision", std::bind(&TurningPlugin::OnHit, this));
     // gameWrapper->HookEvent("Function TAGame.Car_TA.OnHitBall", std::bind(&TurningPlugin::OnHit, this));
@@ -106,9 +118,9 @@ void TurningPlugin::turningTest()
 
     CarWrapper car = game.GetGameCar();
     Vector carLoc = car.GetLocation();
-    cvarManager->log(vecToString(carLoc));
+    cvarManager->log(util::vecToString(carLoc));
 
     BallWrapper ball = game.GetBall();
     Vector ballLoc = ball.GetLocation();
-    cvarManager->log(vecToString(ballLoc));
+    cvarManager->log(util::vecToString(ballLoc));
 }

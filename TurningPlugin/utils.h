@@ -1,11 +1,12 @@
 #pragma once
 
-string vecToString(Vector v)
-{
-    return "(" + to_string(v.X) + ", " + to_string(v.Y) + ", " + to_string(v.Z) + ")";
-}
+#include "bakkesmod/wrappers/GameWrapper.h"
 
-string rotToString(Rotator r)
-{
-    return "(" + to_string(r.Pitch) + ", " + to_string(r.Yaw) + ", " + to_string(r.Roll) + ")";
+namespace util {
+    CarWrapper getCar(std::shared_ptr<GameWrapper> game);
+    Rotator getCarRotation(std::shared_ptr<GameWrapper> game);
+    string vecToString(Vector v);
+    string rotToString(Rotator r);
+    bool isInYawRange(int currYaw, int goalYaw, int range);
+    bool isInRotRange(Rotator currRot, Rotator goalRot, int range);
 }

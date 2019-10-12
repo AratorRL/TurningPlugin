@@ -15,32 +15,32 @@ void Logger::log(std::string s)
     cvarManager->log(s);
 }
 
-void Logger::log(Vector v)
+void Logger::logv(Vector v)
 {
     cvarManager->log(vector_to_string(v));
 }
 
-void Logger::log(Rotator r)
+void Logger::logr(Rotator r)
 {
     cvarManager->log(rot_to_string(r));
 }
 
-void Logger::log(float f)
+void Logger::logf(float f)
 {
     cvarManager->log(std::to_string(f));
 }
 
-void Logger::log(bool b)
+void Logger::logb(bool b)
 {
     cvarManager->log(std::to_string(b));
 }
 
-void Logger::log(int i)
+void Logger::logi(int i)
 {
     cvarManager->log(std::to_string(i));
 }
 
-void Logger::log(unsigned long l)
+void Logger::logl(unsigned long l)
 {
     cvarManager->log(std::to_string(l));
 }

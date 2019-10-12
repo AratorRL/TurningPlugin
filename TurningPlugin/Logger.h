@@ -9,10 +9,10 @@ public:
     Logger(std::shared_ptr<CVarManagerWrapper> cvarManager) : cvarManager(cvarManager) {};
 
     void log(std::string s);
-    void log(Vector v);
-    void log(Rotator r);
-    void log(float f);
-    void log(bool b);
-    void log(int i);
-    void log(unsigned long l);
+    void logv(Vector v);
+    void logr(Rotator r);
+    void logf(float f);
+    void logb(bool b);
+    void logi(int i);
+    void logl(unsigned long l);
 };

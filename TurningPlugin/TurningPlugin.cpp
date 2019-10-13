@@ -1,5 +1,7 @@
 #include "TurningPlugin.h"
 #include "utils.h"
+#include "StationaryBallConfiguration.h"
+#include "FreeTurnConfiguration.h"
 
 #include "bakkesmod/wrappers/wrapperstructs.h";
 
@@ -31,6 +33,9 @@ void TurningPlugin::onLoad()
 
     cvarManager->registerNotifier("turning_test", std::bind(&TurningPlugin::turningTest, this), "", PERMISSION_FREEPLAY);
     cvarManager->registerNotifier("turning_init", std::bind(&TurningPlugin::init, this), "", PERMISSION_FREEPLAY);
+    cvarManager->registerNotifier("turning_freeturn", [this](std::vector<std::string>) {
+        this->currentConfig = new FreeTurnConfiguration(glob);
+    }, "", PERMISSION_FREEPLAY);
 
     glob.logger = new Logger(cvarManager);
     glob.drawer = new Drawer(gameWrapper, glob.logger);    

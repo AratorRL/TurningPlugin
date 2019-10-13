@@ -9,14 +9,15 @@ class Configuration
 public:
     std::shared_ptr<GameWrapper> game;
     Logger* logger;
+    Drawer* drawer;
     Visualizer* visualizer;
 
     Rotator acceptingState;
 
     Configuration(GlobalObjects obj) 
-        : game(obj.game), logger(obj.logger) 
+        : game(obj.game), logger(obj.logger), drawer(obj.drawer)
     {
-        visualizer = new Visualizer(obj.game, obj.drawer);
+        visualizer = new Visualizer(this);
     };
 
     virtual void init() = 0;
@@ -26,14 +27,4 @@ public:
     void setAcceptingState(Rotator rot);
     void hookPhysicsTick();
     void unhookPhysicsTick();
-};
-
-class StationaryBallConfiguration : public Configuration
-{
-public:
-    StationaryBallConfiguration(GlobalObjects obj) : Configuration(obj) {};
-
-    virtual void init();
-    virtual void tick();
-    virtual void end();
 };

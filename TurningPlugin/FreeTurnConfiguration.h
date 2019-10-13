@@ -12,4 +12,6 @@ public:
     virtual void init();
     virtual void tick();
     virtual void end();
+
+    bool isFinished();
 };

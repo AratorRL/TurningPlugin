@@ -46,6 +46,6 @@ void StationaryBallConfiguration::tick()
 void StationaryBallConfiguration::end()
 {
     unhookPhysicsTick();
-    visualizer->render();
+    // visualizer->render();
     logger->log("end");
 }

@@ -11,7 +11,14 @@ void FreeTurnConfiguration::init()
     this->startRot = util::getCarRotation(game);
     this->acceptingState = util::turnClockwise(startRot, 16384);
     
-    hookPhysicsTick();
+    // hookPhysicsTick();
+}
+
+bool FreeTurnConfiguration::isFinished()
+{
+    Rotator currentRot = util::getCarRotation(game);
+
+    return util::isInRotRange(currentRot, acceptingState, 2000);
 }
 
 void FreeTurnConfiguration::tick()
@@ -32,7 +39,7 @@ void FreeTurnConfiguration::tick()
 
 void FreeTurnConfiguration::end()
 {
-    unhookPhysicsTick();
-    visualizer->render();
+    // unhookPhysicsTick();
+
     logger->log("end");
 }

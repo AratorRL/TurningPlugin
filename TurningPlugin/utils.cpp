@@ -11,13 +11,13 @@ Rotator util::getCarRotation(std::shared_ptr<GameWrapper> game)
     return getCar(game).GetRotation();
 }
 
-BallWrapper getBall(std::shared_ptr<GameWrapper> game)
+BallWrapper util::getBall(std::shared_ptr<GameWrapper> game)
 {
     ServerWrapper server = game->GetGameEventAsServer();
     return server.GetBall();
 }
 
-Vector getBallLocation(std::shared_ptr<GameWrapper> game)
+Vector util::getBallLocation(std::shared_ptr<GameWrapper> game)
 {
     return getBall(game).GetLocation();
 }
@@ -57,4 +57,14 @@ bool util::isInRotRange(Rotator currRot, Rotator goalRot, int range)
     int goalYaw = goalRot.Yaw;
 
     return isInYawRange(currYaw, goalYaw, range);
+}
+
+void util::hookPhysicsTick(std::shared_ptr<GameWrapper> game, std::function<void(std::string eventName)> callback)
+{
+    game->HookEvent("Function TAGame.Car_TA.SetVehicleInput", callback);
+}
+
+void util::unhookPhysicsTick(std::shared_ptr<GameWrapper> game)
+{
+    game->UnhookEvent("Function TAGame.Car_TA.SetVehicleInput");
 }

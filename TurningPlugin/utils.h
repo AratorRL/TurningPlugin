@@ -2,6 +2,8 @@
 
 #include "bakkesmod/wrappers/GameWrapper.h"
 
+#define LAYER_MONITOR 1
+
 class Logger;
 class Drawer;
 
@@ -25,4 +27,7 @@ namespace util {
     string rotToString(Rotator r);
     bool isInYawRange(int currYaw, int goalYaw, int range);
     bool isInRotRange(Rotator currRot, Rotator goalRot, int range);
+
+    void hookPhysicsTick(std::shared_ptr<GameWrapper> game, std::function<void(std::string eventName)> callback);
+    void unhookPhysicsTick(std::shared_ptr<GameWrapper> game);
 }

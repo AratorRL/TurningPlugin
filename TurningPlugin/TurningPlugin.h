@@ -5,6 +5,7 @@
 #include "Drawer.h"
 #include "Logger.h"
 #include "Configuration.h"
+#include "Monitor.h"
 #include "bakkesmod/plugin/bakkesmodplugin.h"
 
 class TurningPlugin : public BakkesMod::Plugin::BakkesModPlugin
@@ -17,8 +18,8 @@ private:
     GlobalObjects glob;
 
     Configuration* currentConfig;
+    Monitor* monitor;
 
-    void hookPhysicsTick(std::function<void(std::string eventName)> callback);
     void turningTest();
     void init();
     void OnHit();

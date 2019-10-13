@@ -30,13 +30,13 @@
     <ClInclude Include="Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Visualizer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StationaryBallConfiguration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FreeTurnConfiguration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Monitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,13 +56,13 @@
     <ClCompile Include="utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Visualizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StationaryBallConfiguration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FreeTurnConfiguration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Monitor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

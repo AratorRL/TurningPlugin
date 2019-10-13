@@ -7,18 +7,12 @@
 
 BAKKESMOD_PLUGIN(TurningPlugin, "Turning Plugin", "1.0", PLUGINTYPE_FREEPLAY);
 
-
-void TurningPlugin::hookPhysicsTick(std::function<void(std::string eventName)> callback)
-{
-    gameWrapper->HookEvent("Function TAGame.Car_TA.SetVehicleInput", callback);
-}
-
-
 void TurningPlugin::init()
 {
     if (currentConfig)
     {
         currentConfig->init();
+        monitor->startRecordingInput();
     }
     else
     {
@@ -41,15 +35,16 @@ void TurningPlugin::onLoad()
     glob.drawer = new Drawer(gameWrapper, glob.logger);    
     glob.game = this->gameWrapper;
 
-    gameWrapper->RegisterDrawable(std::bind(&Drawer::draw, glob.drawer, std::placeholders::_1));
+    gameWrapper->RegisterDrawable(std::bind(&Drawer::draw, glob.drawer, std::placeholders::_1), 0);
+    /*Drawer* drawer2 = new Drawer(gameWrapper, glob.logger);
+    drawer2->test = true;
+    gameWrapper->RegisterDrawable(std::bind(&Drawer::draw, drawer2, std::placeholders::_1), 1);*/
 
-    currentConfig = new StationaryBallConfiguration(glob);
-    currentConfig->setAcceptingState({ 0, 0, 0 });
+    // currentConfig = new StationaryBallConfiguration(glob);
+    // currentConfig->setAcceptingState({ 0, 0, 0 });
+    currentConfig = new FreeTurnConfiguration(glob);
+    monitor = new Monitor(gameWrapper, glob.logger, (FreeTurnConfiguration*)currentConfig);
 
-
-    hookPhysicsTick([this](std::string eventName) {
-        this->currentConfig->tick();
-    });
 
     // gameWrapper->HookEvent("Function TAGame.Ball_TA.OnRigidBodyCollision", std::bind(&TurningPlugin::OnHit, this));
     // gameWrapper->HookEvent("Function TAGame.Car_TA.OnHitBall", std::bind(&TurningPlugin::OnHit, this));

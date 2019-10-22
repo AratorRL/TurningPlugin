@@ -5,6 +5,11 @@ VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TurningPlugin", "TurningPlugin\TurningPlugin.vcxproj", "{B69956BB-81B4-4310-B1EE-500F7B6E7FF1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7B92720C-AACF-4572-9E82-72B8D7BCEF2F}"
+	ProjectSection(SolutionItems) = preProject
+		TurningPlugin.set = TurningPlugin.set
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64

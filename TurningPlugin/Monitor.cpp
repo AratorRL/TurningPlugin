@@ -70,7 +70,7 @@ Vector2 Monitor::getLocalCoordinate(TurningSnapshot snap, TurningRecording recor
     logger->logi(x);
     logger->logi(y);
 
-    return center + Vector2{ x, y };
+    return Vector2{ center.X + x, center.Y + y };
 }
 
 void Monitor::visualize(CanvasWrapper canvas)

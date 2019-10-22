@@ -36,7 +36,10 @@
     <ClInclude Include="FreeTurnConfiguration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Monitor.h">
+    <ClInclude Include="Exercise.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TurningExercise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -62,7 +65,7 @@
     <ClCompile Include="FreeTurnConfiguration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Monitor.cpp">
+    <ClCompile Include="TurningExercise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

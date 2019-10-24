@@ -47,12 +47,23 @@ void TurningPlugin::onLoad()
 		}
     }, "", PERMISSION_FREEPLAY);
 
+	cvarManager->registerNotifier("ex_reset_freeturn", [this](std::vector<std::string>) {
+		if (currentExercise && currentExercise->isActive)
+		{
+			cvarManager->log("Still in active exercise.");
+		}
+		else
+		{
+			currentExercise->start();
+		}
+	}, "", PERMISSION_FREEPLAY);
+
     glob.logger = new Logger(cvarManager);
     glob.drawer = new Drawer(gameWrapper, glob.logger);    
     glob.game = this->gameWrapper;
 
 
-	gameWrapper->RegisterDrawable([this](CanvasWrapper canvas) {
+	/*gameWrapper->RegisterDrawable([this](CanvasWrapper canvas) {
 		Vector2 vec0 = { 0, 0 };
 		Vector2 vec1 = { 100, 0 };
 		Vector2 vec2 = { 100, 100 };
@@ -69,7 +80,7 @@ void TurningPlugin::onLoad()
 		canvas.SetColor(0, 255, 0, 255);
 		canvas.DrawLine(Vector2{ corner.X + vec1.X, corner.Y + vec1.Y }, { corner.X + vec2.X, corner.Y + vec2.Y });
 		
-	}, 0);
+	});*/
 
     // gameWrapper->RegisterDrawable(std::bind(&Drawer::draw, glob.drawer, std::placeholders::_1), 0);
     /*Drawer* drawer2 = new Drawer(gameWrapper, glob.logger);

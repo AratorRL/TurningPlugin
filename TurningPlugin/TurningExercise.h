@@ -16,13 +16,23 @@ struct TurningSnapshot
 	long powerslide;
 };
 
-struct TurningRecording
+class TurningRecording
 {
+public:
 	std::vector<TurningSnapshot> snapshots;
 	int minX = 100000;
 	int maxX = -100000;
 	int minY = 100000;
 	int maxY = -100000;
+
+	void reset()
+	{
+		snapshots.clear();
+		minX = 100000;
+		maxX = -100000;
+		minY = 100000;
+		maxY = -100000;
+	}
 };
 
 class TurningExercise : public Exercise
@@ -38,7 +48,8 @@ private:
 	int ticksWithSameRot;
 	bool isTurning;
 
-	TurningRecording recording;
+	TurningRecording* recording[2];
+	int currRecordingBuffer;
 	int drawingX = 300;
 	int drawingY = 380;
 	int drawingWidth = 200;
@@ -54,7 +65,10 @@ public:
 	void tick() override;
 	void end() override;
 
-	Vector2 getLocalCoordinate(TurningSnapshot snap, TurningRecording recording);
+	Vector2 getLocalCoordinate(TurningSnapshot snap, TurningRecording* recording);
 	void drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 end);
 	void visualize(CanvasWrapper canvas);
+
+	TurningRecording* getCurrentRecording();
+	TurningRecording* getLastRecording();
 };

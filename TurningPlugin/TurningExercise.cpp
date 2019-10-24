@@ -7,11 +7,16 @@ TurningExercise::TurningExercise(std::shared_ptr<GameWrapper> game, std::shared_
 {
 	this->game = game;
 	this->cvarManager = cvarManager;
+
+	this->recording[0] = new TurningRecording();
+	this->recording[1] = new TurningRecording();
 }
 
 void TurningExercise::init()
 {
 	cvarManager->log("Turning exercise init.");
+	game->RegisterDrawable(std::bind(&TurningExercise::visualize, this, std::placeholders::_1));
+	util::hookPhysicsTick(game, std::bind(&TurningExercise::tick, this));
 	start();
 }
 
@@ -21,12 +26,23 @@ void TurningExercise::start()
 
 	// this->startRot = util::getCarRotation(game);
 	// this->lastRot = startRot;
-	this->goalRot = util::turnClockwise(startRot, 16384); 
+	// this->goalRot = util::turnClockwise(startRot, 16384); 
 
 	this->isTurning = false;
 	this->ticksWithSameRot = 0;
-	
-	util::hookPhysicsTick(game, std::bind(&TurningExercise::tick, this));
+	this->recording[0]->reset();
+	this->recording[1]->reset();
+	this->currRecordingBuffer = 0;
+}
+
+TurningRecording* TurningExercise::getCurrentRecording()
+{
+	return this->recording[currRecordingBuffer];
+}
+
+TurningRecording* TurningExercise::getLastRecording()
+{
+	return this->recording[1 - currRecordingBuffer];
 }
 
 void TurningExercise::tick()
@@ -39,6 +55,11 @@ void TurningExercise::tick()
 		isTurning = true;
 		this->startRot = currentRot;
 		this->lastRot = currentRot;
+		this->goalRot = util::turnClockwise(startRot, 16384);
+		isActive = true;
+		this->ticksWithSameRot = 0;
+		this->getCurrentRecording()->reset();
+		cvarManager->log("Start turning.");
 	}
 
 	if (isTurning)
@@ -55,7 +76,7 @@ void TurningExercise::tick()
 			if (ticksWithSameRot > 60)
 			{
 				finalRot = currentRot;
-				util::unhookPhysicsTick(game);
+				isTurning = false;
 				end();
 			}			
 		}
@@ -70,16 +91,14 @@ void TurningExercise::tick()
 
 void TurningExercise::end()
 {
-	cvarManager->log("Turning exercise end.");
-
-	game->UnregisterDrawables();
-	game->RegisterDrawable(std::bind(&TurningExercise::visualize, this, std::placeholders::_1), 0);
+	cvarManager->log("Turning exercise end.");	
 
 	if (util::isInRotRange(finalRot, goalRot, 2000))
 	{
 		cvarManager->log("Goal reached.");
 	}
 
+	this->currRecordingBuffer = 1 - this->currRecordingBuffer;
 	this->isActive = false;
 }
 
@@ -93,7 +112,9 @@ void TurningExercise::saveSnapshot()
 
 	ControllerInput input = util::getCar(game).GetInput();
 
-	this->recording.snapshots.push_back({
+	TurningRecording* recording = this->getCurrentRecording();
+
+	recording->snapshots.push_back({
 		loc,
 		rot,
 		input.Throttle,
@@ -102,14 +123,14 @@ void TurningExercise::saveSnapshot()
 		(bool)input.Handbrake
 		});
 
-	if (loc.X < recording.minX)
-		recording.minX = loc.X;
-	if (loc.X > recording.maxX)
-		recording.maxX = loc.X;
-	if (loc.Y < recording.minY)
-		recording.minY = loc.Y;
-	if (loc.Y > recording.maxY)
-		recording.maxY = loc.Y;
+	if (loc.X < recording->minX)
+		recording->minX = loc.X;
+	if (loc.X > recording->maxX)
+		recording->maxX = loc.X;
+	if (loc.Y < recording->minY)
+		recording->minY = loc.Y;
+	if (loc.Y > recording->maxY)
+		recording->maxY = loc.Y;
 }
 
 Vector2 rotateVec2(Vector2F vec, float angle)
@@ -119,10 +140,10 @@ Vector2 rotateVec2(Vector2F vec, float angle)
 	return Vector2{ x, y };
 }
 
-Vector2 TurningExercise::getLocalCoordinate(TurningSnapshot snap, TurningRecording recording)
+Vector2 TurningExercise::getLocalCoordinate(TurningSnapshot snap, TurningRecording* recording)
 {
-	int width = (recording.maxX - recording.minX);
-	int height = (recording.maxY - recording.minY);
+	int width = (recording->maxX - recording->minX);
+	int height = (recording->maxY - recording->minY);
 
 	// cvarManager->log("width: " + to_string(width) + ", height: " + to_string(height));
 
@@ -130,8 +151,10 @@ Vector2 TurningExercise::getLocalCoordinate(TurningSnapshot snap, TurningRecordi
 	float heightScale = (float)drawingHeight / (float)height;
 	float scale = min(widthScale, heightScale);
 
-	float x = (float)(snap.location.X - recording.minX) * scale;
-	float y = (float)(snap.location.Y - recording.minY) * scale;
+	float x = (float)(snap.location.X - recording->minX) * scale;
+	float y = (float)(snap.location.Y - recording->minY) * scale;
+
+	Rotator startRot = recording->snapshots.at(0).rotation;
 
 	float angle = startRot.Yaw * M_PI / 32768;
 	// cvarManager->log("angle: " + to_string(angle));
@@ -156,26 +179,26 @@ void TurningExercise::drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 end
 
 void TurningExercise::visualize(CanvasWrapper canvas)
 {
-	if (recording.snapshots.size() <= 0)
+	TurningRecording* recording = this->getLastRecording();
+	
+	if (recording->snapshots.size() <= 0)
 		return;
-
-	// cvarManager->log("# snapshots found: " + to_string(recording.snapshots.size()));
 
 	canvas.SetPosition(Vector2{ drawingX, drawingY });
 	canvas.DrawBox(Vector2{ drawingWidth, drawingHeight });
-
-	TurningSnapshot snap0 = recording.snapshots.at(0);
+	
+	TurningSnapshot snap0 = recording->snapshots.at(0);
 	Vector2 lastCoord = getLocalCoordinate(snap0, recording);
-
+	
 	float angle = startRot.Yaw * M_PI / 32768;
 	// cvarManager->log("angle: " + to_string(angle));
 	canvas.DrawString("angle: " + to_string(angle));
 
 	canvas.SetColor(255, 0, 0, 255);
 
-	for (int i = 1; i < recording.snapshots.size(); i++)
+	for (int i = 1; i < recording->snapshots.size(); i++)
 	{
-		TurningSnapshot snap = recording.snapshots.at(i);
+		TurningSnapshot snap = recording->snapshots.at(i);
 		Vector2 coord = getLocalCoordinate(snap, recording);
 
 		drawThiccLine(canvas, lastCoord, coord);

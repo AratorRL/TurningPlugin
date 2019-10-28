@@ -52,9 +52,13 @@ void TurningPlugin::onLoad()
 		{
 			cvarManager->log("Still in active exercise.");
 		}
-		else
+		else if (currentExercise)
 		{
 			currentExercise->start();
+		}
+		else
+		{
+			cvarManager->log("No exercise initialized.");
 		}
 	}, "", PERMISSION_FREEPLAY);
 
@@ -63,40 +67,7 @@ void TurningPlugin::onLoad()
     glob.game = this->gameWrapper;
 
 
-	/*gameWrapper->RegisterDrawable([this](CanvasWrapper canvas) {
-		Vector2 vec0 = { 0, 0 };
-		Vector2 vec1 = { 100, 0 };
-		Vector2 vec2 = { 100, 100 };
-
-		float angle = 3.1415f / 1.0f;
-		vec0 = rotateVec2(vec0, angle);
-		vec1 = rotateVec2(vec1, angle);
-		vec2 = rotateVec2(vec2, angle);
-
-
-		Vector2 corner = { 300, 300 };
-		canvas.SetColor(255, 0, 0, 255);
-		canvas.DrawLine(Vector2{ corner.X + vec0.X, corner.Y + vec0.Y }, { corner.X + vec1.X, corner.Y + vec1.Y });
-		canvas.SetColor(0, 255, 0, 255);
-		canvas.DrawLine(Vector2{ corner.X + vec1.X, corner.Y + vec1.Y }, { corner.X + vec2.X, corner.Y + vec2.Y });
-		
-	});*/
-
-    // gameWrapper->RegisterDrawable(std::bind(&Drawer::draw, glob.drawer, std::placeholders::_1), 0);
-    /*Drawer* drawer2 = new Drawer(gameWrapper, glob.logger);
-    drawer2->test = true;
-    gameWrapper->RegisterDrawable(std::bind(&Drawer::draw, drawer2, std::placeholders::_1), 1);*/
-
-    // currentConfig = new StationaryBallConfiguration(glob);
-    // currentConfig->setAcceptingState({ 0, 0, 0 });
-    // currentConfig = new FreeTurnConfiguration(glob);
-    // monitor = new Monitor(gameWrapper, glob.logger, (FreeTurnConfiguration*)currentConfig);
-
-
-    // gameWrapper->HookEvent("Function TAGame.Ball_TA.OnRigidBodyCollision", std::bind(&TurningPlugin::OnHit, this));
-    // gameWrapper->HookEvent("Function TAGame.Car_TA.OnHitBall", std::bind(&TurningPlugin::OnHit, this));
-    // gameWrapper->HookEvent("Function TAGame.Car_TA.ApplyBallImpactForces", std::bind(&TurningPlugin::OnHit, this));
-    gameWrapper->HookEventPost("Function TAGame.Car_TA.ApplyBallImpactForces", std::bind(&TurningPlugin::OnHit, this));
+    // gameWrapper->HookEventPost("Function TAGame.Car_TA.ApplyBallImpactForces", std::bind(&TurningPlugin::OnHit, this));
 }
 
 void TurningPlugin::OnHit()

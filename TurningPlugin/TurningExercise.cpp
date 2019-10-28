@@ -99,6 +99,7 @@ void TurningExercise::end()
 	}
 
 	this->currRecordingBuffer = 1 - this->currRecordingBuffer;
+	this->getLastRecording()->analyze();
 	this->isActive = false;
 }
 
@@ -122,15 +123,6 @@ void TurningExercise::saveSnapshot()
 		(bool)input.HoldingBoost,
 		(bool)input.Handbrake
 		});
-
-	if (loc.X < recording->minX)
-		recording->minX = loc.X;
-	if (loc.X > recording->maxX)
-		recording->maxX = loc.X;
-	if (loc.Y < recording->minY)
-		recording->minY = loc.Y;
-	if (loc.Y > recording->maxY)
-		recording->maxY = loc.Y;
 }
 
 Vector2 rotateVec2(Vector2F vec, float angle)
@@ -140,28 +132,48 @@ Vector2 rotateVec2(Vector2F vec, float angle)
 	return Vector2{ x, y };
 }
 
-Vector2 TurningExercise::getLocalCoordinate(TurningSnapshot snap, TurningRecording* recording)
+void TurningRecording::analyze()
 {
-	int width = (recording->maxX - recording->minX);
-	int height = (recording->maxY - recording->minY);
+	TurningSnapshot firstSnap = snapshots.front();	
+	float startAngle = -firstSnap.rotation.Yaw * M_PI / 32768 - M_PI / 2;
 
-	// cvarManager->log("width: " + to_string(width) + ", height: " + to_string(height));
+	int currentInput = INPUT_NONE;
 
-	float widthScale = (float)drawingWidth / (float)width;
-	float heightScale = (float)drawingHeight / (float)height;
-	float scale = min(widthScale, heightScale);
+	for (int i = 0; i < snapshots.size(); i++)
+	{
+		TurningSnapshot snap = snapshots.at(i);
+		Vector relativeLoc = snap.location - firstSnap.location;
+		Vector2 vec = rotateVec2(Vector2F{ relativeLoc.X, relativeLoc.Y }, startAngle);
+		points.push_back(vec);
 
-	float x = (float)(snap.location.X - recording->minX) * scale;
-	float y = (float)(snap.location.Y - recording->minY) * scale;
+		if (vec.X < pbound.minX)
+			pbound.minX = vec.X;
+		if (vec.X > pbound.maxX)
+			pbound.maxX = vec.X;
+		if (vec.Y < pbound.minY)
+			pbound.minY = vec.Y;
+		if (vec.Y > pbound.maxY)
+			pbound.maxY = vec.Y;
 
-	Rotator startRot = recording->snapshots.at(0).rotation;
+		int input = INPUT_NONE;
+		if (snap.boost)
+			input += INPUT_BOOST;
+		if (snap.powerslide)
+			input += INPUT_POWERSLIDE;
+		if (snap.throttle)
+			input += INPUT_THROTTLE;
 
-	float angle = startRot.Yaw * M_PI / 32768;
-	// cvarManager->log("angle: " + to_string(angle));
-	Vector2 vec = rotateVec2(Vector2F{ x, y }, angle); // clockwise
-	// cvarManager->log("vec: " + to_string(vec.X) + ", " + to_string(vec.Y));
+		if (input != currentInput)
+		{
+			segments.push_back(TurningSegment{ i, input });
+		}
+		currentInput = input;
+	}
 
-	return Vector2{ drawingX + vec.X, drawingY + vec.Y };
+	Vector2 firstVec = points.front();
+	Vector2 lastVec = points.back();
+
+	isTurningLeft = lastVec.X < firstVec.X;
 }
 
 void TurningExercise::drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 end)
@@ -177,6 +189,18 @@ void TurningExercise::drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 end
 	}
 }
 
+LinearColor getColor(TurningSnapshot snap)
+{
+	if (snap.boost && snap.powerslide)
+		return LinearColor{ 255, 255, 0, 255 };
+	else if (snap.boost)
+		return LinearColor{ 255, 0, 0, 255 };
+	else if (snap.powerslide)
+		return LinearColor{ 0, 255, 0, 255 };
+	else
+		return LinearColor{ 255, 255, 255, 255 };
+}
+
 void TurningExercise::visualize(CanvasWrapper canvas)
 {
 	TurningRecording* recording = this->getLastRecording();
@@ -184,24 +208,57 @@ void TurningExercise::visualize(CanvasWrapper canvas)
 	if (recording->snapshots.size() <= 0)
 		return;
 
-	canvas.SetPosition(Vector2{ drawingX, drawingY });
-	canvas.DrawBox(Vector2{ drawingWidth, drawingHeight });
-	
-	TurningSnapshot snap0 = recording->snapshots.at(0);
-	Vector2 lastCoord = getLocalCoordinate(snap0, recording);
-	
-	float angle = startRot.Yaw * M_PI / 32768;
-	// cvarManager->log("angle: " + to_string(angle));
-	canvas.DrawString("angle: " + to_string(angle));
-
+	canvas.SetPosition(Vector2{ 100, 100 });
 	canvas.SetColor(255, 0, 0, 255);
+	canvas.DrawString("# segments: " + to_string(recording->segments.size()));
 
-	for (int i = 1; i < recording->snapshots.size(); i++)
+	canvas.SetPosition(Vector2{ drawingX, drawingY });
+	canvas.SetColor(100, 100, 100, 100);
+	canvas.DrawBox(Vector2{ drawingWidth, drawingHeight });
+
+	Vector2 origin = Vector2{ drawingX, drawingY + drawingHeight };
+	if (recording->isTurningLeft)
+		origin.X += drawingWidth;
+
+	int width = recording->pbound.maxX - recording->pbound.minX;
+	int height = recording->pbound.maxY - recording->pbound.minY;
+	float scale = (float)max(drawingWidth,drawingHeight) / (float)max(width, height);
+
+	Vector2 lastPoint = recording->points.front();
+	Vector2 lastCoord = origin;
+
+	for (int i = 1; i < recording->points.size(); i++)
 	{
-		TurningSnapshot snap = recording->snapshots.at(i);
-		Vector2 coord = getLocalCoordinate(snap, recording);
+		Vector2 point = recording->points.at(i);
+		Vector2 coord = Vector2{ origin.X + (int)((float)point.X * scale), origin.Y + (int)((float)point.Y * scale) };
 
+		LinearColor color = getColor(recording->snapshots.at(i));
+		canvas.SetColor(color.R, color.G, color.B, color.A);
 		drawThiccLine(canvas, lastCoord, coord);
 		lastCoord = coord;
+	}
+
+	for (int i = 0; i < recording->segments.size(); i++)
+	{
+		TurningSegment seg = recording->segments.at(i);
+		int nextIndex;
+		if (i < recording->segments.size() - 1)
+			nextIndex = recording->segments.at(i + 1).startIndex;
+		else
+			nextIndex = recording->points.size() - 1;
+
+		int middleIndex = (seg.startIndex + nextIndex) / 2;
+
+		LinearColor color = getColor(recording->snapshots.at(middleIndex));
+		canvas.SetColor(color.R, color.G, color.B, color.A);
+		Vector2 point = recording->points.at(middleIndex);
+		Vector2 coord = Vector2{ origin.X + (int)((float)point.X * scale), origin.Y + (int)((float)point.Y * scale) };
+		if (recording->isTurningLeft)
+			coord.X += 20;
+		else
+			coord.X -= 20;
+
+		canvas.SetPosition(coord);
+		canvas.DrawString(to_string(nextIndex - seg.startIndex));
 	}
 }

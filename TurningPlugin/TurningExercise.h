@@ -5,6 +5,11 @@
 
 #include "Exercise.h"
 
+#define INPUT_NONE 0
+#define INPUT_BOOST 1
+#define INPUT_POWERSLIDE 2
+#define INPUT_THROTTLE 4
+
 struct TurningSnapshot
 {
 	Vector location;
@@ -16,22 +21,36 @@ struct TurningSnapshot
 	long powerslide;
 };
 
+struct TurningSegment
+{
+	int startIndex;
+	int inputType;
+};
+
+struct PointsBoundary {
+	int minX;
+	int maxX;
+	int minY;
+	int maxY;
+};
+
 class TurningRecording
 {
 public:
 	std::vector<TurningSnapshot> snapshots;
-	int minX = 100000;
-	int maxX = -100000;
-	int minY = 100000;
-	int maxY = -100000;
+	std::vector<Vector2> points;
+	PointsBoundary pbound;
+	std::vector<TurningSegment> segments;
+	bool isTurningLeft;
+
+	void analyze();
 
 	void reset()
 	{
 		snapshots.clear();
-		minX = 100000;
-		maxX = -100000;
-		minY = 100000;
-		maxY = -100000;
+		pbound = PointsBoundary{ 0, 0, 0, 0 };		
+		points.clear();
+		segments.clear();
 	}
 };
 
@@ -65,7 +84,6 @@ public:
 	void tick() override;
 	void end() override;
 
-	Vector2 getLocalCoordinate(TurningSnapshot snap, TurningRecording* recording);
 	void drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 end);
 	void visualize(CanvasWrapper canvas);
 

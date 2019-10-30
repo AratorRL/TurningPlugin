@@ -10,6 +10,11 @@
 #define INPUT_POWERSLIDE 2
 #define INPUT_THROTTLE 4
 
+enum ExerciseType {
+	FreeTurn = 0,
+	FixedStart = 1
+};
+
 struct TurningSnapshot
 {
 	Vector location;
@@ -74,13 +79,15 @@ private:
 	int drawingWidth = 200;
 	int drawingHeight = 200;
 
+	ExerciseType type;
+
 	void saveSnapshot();
 
 public:
-	TurningExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager);
+	TurningExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager, ExerciseType type);
 
 	void init() override;
-	void start() override;
+	void reset() override;
 	void tick() override;
 	void end() override;
 

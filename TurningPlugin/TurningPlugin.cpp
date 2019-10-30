@@ -42,19 +42,15 @@ void TurningPlugin::onLoad()
 		}
 		else
 		{
-			currentExercise = new TurningExercise(gameWrapper, cvarManager);
+			currentExercise = new TurningExercise(gameWrapper, cvarManager, FixedStart);
 			currentExercise->init();
 		}
     }, "", PERMISSION_FREEPLAY);
 
 	cvarManager->registerNotifier("ex_reset_freeturn", [this](std::vector<std::string>) {
-		if (currentExercise && currentExercise->isActive)
+		if (currentExercise)
 		{
-			cvarManager->log("Still in active exercise.");
-		}
-		else if (currentExercise)
-		{
-			currentExercise->start();
+			currentExercise->reset();
 		}
 		else
 		{

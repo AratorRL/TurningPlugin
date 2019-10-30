@@ -3,10 +3,11 @@
 #include "TurningExercise.h"
 #include "utils.h"
 
-TurningExercise::TurningExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager)
+TurningExercise::TurningExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager, ExerciseType type)
 {
 	this->game = game;
 	this->cvarManager = cvarManager;
+	this->type = type;
 
 	this->recording[0] = new TurningRecording();
 	this->recording[1] = new TurningRecording();
@@ -17,22 +18,30 @@ void TurningExercise::init()
 	cvarManager->log("Turning exercise init.");
 	game->RegisterDrawable(std::bind(&TurningExercise::visualize, this, std::placeholders::_1));
 	util::hookPhysicsTick(game, std::bind(&TurningExercise::tick, this));
-	start();
+	this->recording[0]->reset();
+	this->recording[1]->reset();
+	reset();
 }
 
-void TurningExercise::start()
+void TurningExercise::reset()
 {
-	this->isActive = true;
-
-	// this->startRot = util::getCarRotation(game);
-	// this->lastRot = startRot;
-	// this->goalRot = util::turnClockwise(startRot, 16384); 
+	if (this->type == FixedStart)
+	{
+		CarWrapper car = util::getCar(game);
+		car.Stop();
+		car.SetLocation({ -1000, 1000, 50 });
+		car.SetRotation({ 0, 0, 0 });
+		car.SetVelocity({ 0, 0, 0 });
+		BallWrapper ball = util::getBall(game);
+		ball.Stop();
+		ball.SetLocation({ 0, 500, 80 });
+	}
 
 	this->isTurning = false;
 	this->ticksWithSameRot = 0;
-	this->recording[0]->reset();
-	this->recording[1]->reset();
 	this->currRecordingBuffer = 0;
+	
+	this->isActive = true;
 }
 
 TurningRecording* TurningExercise::getCurrentRecording()
@@ -73,7 +82,7 @@ void TurningExercise::tick()
 		{
 			ticksWithSameRot++;
 
-			if (ticksWithSameRot > 60)
+			if (ticksWithSameRot > 30)
 			{
 				finalRot = currentRot;
 				isTurning = false;
@@ -122,7 +131,7 @@ void TurningExercise::saveSnapshot()
 		input.Steer,
 		(bool)input.HoldingBoost,
 		(bool)input.Handbrake
-		});
+	});
 }
 
 Vector2 rotateVec2(Vector2F vec, float angle)

@@ -4,7 +4,6 @@
 #include "utils.h"
 #include "Drawer.h"
 #include "Logger.h"
-#include "Configuration.h"
 #include "Exercise.h"
 #include "bakkesmod/plugin/bakkesmodplugin.h"
 
@@ -15,14 +14,11 @@ public:
     virtual void onUnload();
 
 	Exercise* currentExercise;
+	Logger* logger;
+	Drawer* drawer;
 
 private:
-    GlobalObjects glob;
-
-    Configuration* currentConfig;
-
     void turningTest();
-    void init();
     void OnHit();
     void freezeAll();
 };

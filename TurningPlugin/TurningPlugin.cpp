@@ -1,31 +1,10 @@
 #include "TurningPlugin.h"
 #include "utils.h"
-#include "StationaryBallConfiguration.h"
-#include "FreeTurnConfiguration.h"
 #include "TurningExercise.h"
 
 #include "bakkesmod/wrappers/wrapperstructs.h";
 
 BAKKESMOD_PLUGIN(TurningPlugin, "Turning Plugin", "1.0", PLUGINTYPE_FREEPLAY);
-
-void TurningPlugin::init()
-{
-    if (currentConfig)
-    {
-        currentConfig->init();
-    }
-    else
-    {
-        glob.logger->log("No configuration defined.");
-    }
-}
-
-Vector2 rotateVec2(Vector2 vec, float angle)
-{
-	int x = (int)((float)vec.X * cos(angle) - (float)vec.Y * sin(angle));
-	int y = (int)((float)vec.X * sin(angle) + (float)vec.Y * cos(angle));
-	return Vector2{ x, y };
-}
 
 
 void TurningPlugin::onLoad()
@@ -33,7 +12,6 @@ void TurningPlugin::onLoad()
     cvarManager->log("Turning Plugin loaded.");
 
     cvarManager->registerNotifier("turning_test", std::bind(&TurningPlugin::turningTest, this), "", PERMISSION_FREEPLAY);
-    cvarManager->registerNotifier("turning_init", std::bind(&TurningPlugin::init, this), "", PERMISSION_FREEPLAY);
     
 	cvarManager->registerNotifier("ex_init_freeturn", [this](std::vector<std::string>) {
 		if (currentExercise && currentExercise->isActive)
@@ -58,11 +36,9 @@ void TurningPlugin::onLoad()
 		}
 	}, "", PERMISSION_FREEPLAY);
 
-    glob.logger = new Logger(cvarManager);
-    glob.drawer = new Drawer(gameWrapper, glob.logger);    
-    glob.game = this->gameWrapper;
-
-
+    logger = new Logger(cvarManager);
+    drawer = new Drawer(gameWrapper, logger);    
+    
     // gameWrapper->HookEventPost("Function TAGame.Car_TA.ApplyBallImpactForces", std::bind(&TurningPlugin::OnHit, this));
 }
 

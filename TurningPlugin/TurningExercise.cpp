@@ -29,6 +29,7 @@ void TurningExercise::reset()
 	{
 		CarWrapper car = util::getCar(game);
 		car.Stop();
+		car.GetDodgeComponent().SetActive(false);
 		car.SetLocation({ -1000, 1000, 50 });
 		car.SetRotation({ 0, 0, 0 });
 		car.SetVelocity({ 0, 0, 0 });

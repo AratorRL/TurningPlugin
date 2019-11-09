@@ -49,46 +49,48 @@ void FreeTurnExercise::swapRecordingBuffers()
 
 void FreeTurnExercise::tick()
 {
-	Rotator currentRot = util::getCarRotation(game);
-
-	ControllerInput input = util::getCar(game).GetInput();
-	if (!isTurning && input.Steer != 0)
+	if (this->isActive)
 	{
-		isTurning = true;
-		this->startRot = currentRot;
-		this->lastRot = currentRot;
-		this->goalRot = util::turnClockwise(startRot, 16384);
-		isActive = true;
-		this->ticksWithSameRot = 0;
-		this->getCurrentRecording()->reset();
-		cvarManager->log("Start turning.");
-	}
+		Rotator currentRot = util::getCarRotation(game);
 
-	if (isTurning)
-	{
-		saveSnapshot();
-	}
-
-	if (isTurning && input.Steer == 0) // stopped turning
-	{
-		if (util::isInRotRange(lastRot, currentRot, 100))
+		ControllerInput input = util::getCar(game).GetInput();
+		if (!isTurning && input.Steer != 0)
 		{
-			ticksWithSameRot++;
+			isTurning = true;
+			this->startRot = currentRot;
+			this->lastRot = currentRot;
+			this->goalRot = util::turnClockwise(startRot, 16384);
+			this->ticksWithSameRot = 0;
+			this->getCurrentRecording()->reset();
+			cvarManager->log("Start turning.");
+		}
 
-			if (ticksWithSameRot > 30)
+		if (isTurning)
+		{
+			saveSnapshot();
+		}
+
+		if (isTurning && input.Steer == 0) // stopped turning
+		{
+			if (util::isInRotRange(lastRot, currentRot, 100))
 			{
-				finalRot = currentRot;
-				isTurning = false;
-				end();
-			}			
-		}
-		else
-		{
-			ticksWithSameRot = 0;
-		}
-	}	
+				ticksWithSameRot++;
 
-	lastRot = currentRot;
+				if (ticksWithSameRot > 30)
+				{
+					finalRot = currentRot;
+					isTurning = false;
+					end();
+				}
+			}
+			else
+			{
+				ticksWithSameRot = 0;
+			}
+		}
+
+		lastRot = currentRot;
+	}	
 }
 
 void FreeTurnExercise::end()
@@ -102,11 +104,13 @@ void FreeTurnExercise::end()
 
 	swapRecordingBuffers();
 	analyzeTurn(this->getLastRecording());
-	this->isActive = false;
 }
 
 void FreeTurnExercise::clear()
 {
+	this->isActive = false;
+	game->UnregisterDrawables();
+	util::unhookPhysicsTick(game);
 }
 
 void FreeTurnExercise::saveSnapshot()

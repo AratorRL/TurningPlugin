@@ -65,6 +65,7 @@ void FixedTurnExercise::OnHitBall()
 {
 	if (this->isActive)
 	{
+		cvarManager->log("onhitBall");
 		CarWrapper car = util::getCar(game);
 		Rotator finalRot = car.GetRotation();
 
@@ -139,11 +140,16 @@ void FixedTurnExercise::end()
 
 	swapRecordingBuffers();
 	analyzeTurn(this->getLastRecording());
+	cvarManager->log("end of end");
 	// this->isActive = false;
 }
 
 void FixedTurnExercise::clear()
 {
+	this->isActive = false;
+	game->UnregisterDrawables();
+	util::unhookPhysicsTick(game);
+	game->UnhookEvent("Function TAGame.Car_TA.ApplyBallImpactForces");
 }
 
 void FixedTurnExercise::saveSnapshot()
@@ -170,10 +176,20 @@ void FixedTurnExercise::saveSnapshot()
 
 void FixedTurnExercise::analyzeTurn(TurningRecording* rec)
 {
+	cvarManager->log("analyze 1");
+	cvarManager->log(to_string(rec->snapshots.size()));
+
+	if (rec->snapshots.size() <= 0)
+	{
+		return;
+	}
+	
 	TurningSnapshot firstSnap = rec->snapshots.front();
 	float startAngle = -firstSnap.rotation.Yaw * M_PI / 32768 - M_PI / 2;
 
 	int currentInput = INPUT_NONE;
+
+	cvarManager->log("analyze 2");
 
 	for (int i = 0; i < rec->snapshots.size(); i++)
 	{
@@ -205,6 +221,8 @@ void FixedTurnExercise::analyzeTurn(TurningRecording* rec)
 		}
 		currentInput = input;
 	}
+
+	cvarManager->log("analyze 3");
 
 	Vector2 firstVec = rec->points.front();
 	Vector2 lastVec = rec->points.back();
@@ -241,15 +259,11 @@ void FixedTurnExercise::visualize(CanvasWrapper canvas)
 {
 	TurningRecording* recording = this->getLastRecording();
 
-	//cvarManager->log("visualizing");
-
 	if (recording->snapshots.size() <= 0)
 	{
 		//cvarManager->log("no snapshots in recording");
 		return;
 	}
-
-	//cvarManager->log("1");
 
 	// canvas.SetPosition(Vector2{ 100, 100 });
 	// canvas.SetColor(255, 0, 0, 255);
@@ -263,16 +277,12 @@ void FixedTurnExercise::visualize(CanvasWrapper canvas)
 	if (recording->isTurningLeft)
 		origin.X += drawingWidth;
 
-	//cvarManager->log("2");
-
 	int width = recording->pbound.maxX - recording->pbound.minX;
 	int height = recording->pbound.maxY - recording->pbound.minY;
 	float scale = (float)max(drawingWidth, drawingHeight) / (float)max(width, height);
 
 	Vector2 lastPoint = recording->points.front();
 	Vector2 lastCoord = origin;
-
-	//cvarManager->log("3");
 
 	for (int i = 1; i < recording->points.size(); i++)
 	{
@@ -284,8 +294,6 @@ void FixedTurnExercise::visualize(CanvasWrapper canvas)
 		drawThiccLine(canvas, lastCoord, coord);
 		lastCoord = coord;
 	}
-
-	//cvarManager->log("4");
 
 	for (int i = 0; i < recording->segments.size(); i++)
 	{
@@ -310,6 +318,4 @@ void FixedTurnExercise::visualize(CanvasWrapper canvas)
 		canvas.SetPosition(coord);
 		canvas.DrawString(to_string(nextIndex - seg.startIndex));
 	}
-
-	//cvarManager->log("5");
 }

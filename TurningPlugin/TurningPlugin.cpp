@@ -32,7 +32,7 @@ void TurningPlugin::onLoad()
 
     cvarManager->registerNotifier("turning_test", std::bind(&TurningPlugin::turningTest, this), "", PERMISSION_FREEPLAY);
     
-	cvarManager->registerNotifier("turn_start_freeturn", [this](std::vector<std::string>) {
+	cvarManager->registerNotifier("turn_mode_freeturn", [this](std::vector<std::string>) {
 		if (currentExercise)
 		{
 			currentExercise->clear();
@@ -41,7 +41,7 @@ void TurningPlugin::onLoad()
 		currentExercise->init();
     }, "", PERMISSION_FREEPLAY);
 
-	cvarManager->registerNotifier("turn_start_fixedturn", [this](std::vector<std::string>) {
+	cvarManager->registerNotifier("turn_mode_fixedturn", [this](std::vector<std::string>) {
 		if (currentExercise)
 		{
 			currentExercise->clear();

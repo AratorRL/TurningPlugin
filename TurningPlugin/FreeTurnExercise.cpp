@@ -1,9 +1,9 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include "TurningExercise.h"
+#include "FreeTurnExercise.h"
 #include "utils.h"
 
-TurningExercise::TurningExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager, ExerciseType type)
+FreeTurnExercise::FreeTurnExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager, ExerciseType type)
 {
 	this->game = game;
 	this->cvarManager = cvarManager;
@@ -13,31 +13,18 @@ TurningExercise::TurningExercise(std::shared_ptr<GameWrapper> game, std::shared_
 	this->recording[1] = new TurningRecording();
 }
 
-void TurningExercise::init()
+void FreeTurnExercise::init()
 {
 	cvarManager->log("Turning exercise init.");
-	game->RegisterDrawable(std::bind(&TurningExercise::visualize, this, std::placeholders::_1));
-	util::hookPhysicsTick(game, std::bind(&TurningExercise::tick, this));
+	game->RegisterDrawable(std::bind(&FreeTurnExercise::visualize, this, std::placeholders::_1));
+	util::hookPhysicsTick(game, std::bind(&FreeTurnExercise::tick, this));
 	this->recording[0]->reset();
 	this->recording[1]->reset();
 	reset();
 }
 
-void TurningExercise::reset()
+void FreeTurnExercise::reset()
 {
-	if (this->type == FixedStart)
-	{
-		CarWrapper car = util::getCar(game);
-		car.Stop();
-		car.GetDodgeComponent().SetActive(false);
-		car.SetLocation({ -1000, 1000, 50 });
-		car.SetRotation({ 0, 0, 0 });
-		car.SetVelocity({ 0, 0, 0 });
-		BallWrapper ball = util::getBall(game);
-		ball.Stop();
-		ball.SetLocation({ 0, 500, 80 });
-	}
-
 	this->isTurning = false;
 	this->ticksWithSameRot = 0;
 	this->currRecordingBuffer = 0;
@@ -45,17 +32,22 @@ void TurningExercise::reset()
 	this->isActive = true;
 }
 
-TurningRecording* TurningExercise::getCurrentRecording()
+TurningRecording* FreeTurnExercise::getCurrentRecording()
 {
 	return this->recording[currRecordingBuffer];
 }
 
-TurningRecording* TurningExercise::getLastRecording()
+TurningRecording* FreeTurnExercise::getLastRecording()
 {
 	return this->recording[1 - currRecordingBuffer];
 }
 
-void TurningExercise::tick()
+void FreeTurnExercise::swapRecordingBuffers()
+{
+	this->currRecordingBuffer = 1 - this->currRecordingBuffer;
+}
+
+void FreeTurnExercise::tick()
 {
 	Rotator currentRot = util::getCarRotation(game);
 
@@ -99,7 +91,7 @@ void TurningExercise::tick()
 	lastRot = currentRot;
 }
 
-void TurningExercise::end()
+void FreeTurnExercise::end()
 {
 	cvarManager->log("Turning exercise end.");	
 
@@ -108,12 +100,16 @@ void TurningExercise::end()
 		cvarManager->log("Goal reached.");
 	}
 
-	this->currRecordingBuffer = 1 - this->currRecordingBuffer;
-	this->getLastRecording()->analyze();
+	swapRecordingBuffers();
+	analyzeTurn(this->getLastRecording());
 	this->isActive = false;
 }
 
-void TurningExercise::saveSnapshot()
+void FreeTurnExercise::clear()
+{
+}
+
+void FreeTurnExercise::saveSnapshot()
 {
 	// cvarManager->log("saving input snapshot");
 
@@ -135,35 +131,28 @@ void TurningExercise::saveSnapshot()
 	});
 }
 
-Vector2 rotateVec2(Vector2F vec, float angle)
+void FreeTurnExercise::analyzeTurn(TurningRecording* rec)
 {
-	int x = (int)((float)vec.X * cos(angle) - (float)vec.Y * sin(angle));
-	int y = (int)((float)vec.X * sin(angle) + (float)vec.Y * cos(angle));
-	return Vector2{ x, y };
-}
-
-void TurningRecording::analyze()
-{
-	TurningSnapshot firstSnap = snapshots.front();	
+	TurningSnapshot firstSnap = rec->snapshots.front();	
 	float startAngle = -firstSnap.rotation.Yaw * M_PI / 32768 - M_PI / 2;
 
 	int currentInput = INPUT_NONE;
 
-	for (int i = 0; i < snapshots.size(); i++)
+	for (int i = 0; i < rec->snapshots.size(); i++)
 	{
-		TurningSnapshot snap = snapshots.at(i);
+		TurningSnapshot snap = rec->snapshots.at(i);
 		Vector relativeLoc = snap.location - firstSnap.location;
-		Vector2 vec = rotateVec2(Vector2F{ relativeLoc.X, relativeLoc.Y }, startAngle);
-		points.push_back(vec);
+		Vector2 vec = util::rotateVec2(Vector2F{ relativeLoc.X, relativeLoc.Y }, startAngle);
+		rec->points.push_back(vec);
 
-		if (vec.X < pbound.minX)
-			pbound.minX = vec.X;
-		if (vec.X > pbound.maxX)
-			pbound.maxX = vec.X;
-		if (vec.Y < pbound.minY)
-			pbound.minY = vec.Y;
-		if (vec.Y > pbound.maxY)
-			pbound.maxY = vec.Y;
+		if (vec.X < rec->pbound.minX)
+			rec->pbound.minX = vec.X;
+		if (vec.X > rec->pbound.maxX)
+			rec->pbound.maxX = vec.X;
+		if (vec.Y < rec->pbound.minY)
+			rec->pbound.minY = vec.Y;
+		if (vec.Y > rec->pbound.maxY)
+			rec->pbound.maxY = vec.Y;
 
 		int input = INPUT_NONE;
 		if (snap.boost)
@@ -175,18 +164,18 @@ void TurningRecording::analyze()
 
 		if (input != currentInput)
 		{
-			segments.push_back(TurningSegment{ i, input });
+			rec->segments.push_back(TurningSegment{ i, input });
 		}
 		currentInput = input;
 	}
 
-	Vector2 firstVec = points.front();
-	Vector2 lastVec = points.back();
+	Vector2 firstVec = rec->points.front();
+	Vector2 lastVec = rec->points.back();
 
-	isTurningLeft = lastVec.X < firstVec.X;
+	rec->isTurningLeft = lastVec.X < firstVec.X;
 }
 
-void TurningExercise::drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 end)
+void FreeTurnExercise::drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 end)
 {
 	for (int i = -1; i <= 1; i++)
 	{
@@ -199,7 +188,7 @@ void TurningExercise::drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 end
 	}
 }
 
-LinearColor getColor(TurningSnapshot snap)
+LinearColor FreeTurnExercise::getColor(TurningSnapshot snap)
 {
 	if (snap.boost && snap.powerslide)
 		return LinearColor{ 255, 255, 0, 255 };
@@ -211,7 +200,7 @@ LinearColor getColor(TurningSnapshot snap)
 		return LinearColor{ 255, 255, 255, 255 };
 }
 
-void TurningExercise::visualize(CanvasWrapper canvas)
+void FreeTurnExercise::visualize(CanvasWrapper canvas)
 {
 	TurningRecording* recording = this->getLastRecording();
 	

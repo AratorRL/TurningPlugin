@@ -27,6 +27,7 @@ namespace util {
     string rotToString(Rotator r);
     bool isInYawRange(int currYaw, int goalYaw, int range);
     bool isInRotRange(Rotator currRot, Rotator goalRot, int range);
+	Vector2 rotateVec2(Vector2F vec, float angle);
 
     void hookPhysicsTick(std::shared_ptr<GameWrapper> game, std::function<void(std::string eventName)> callback);
     void unhookPhysicsTick(std::shared_ptr<GameWrapper> game);

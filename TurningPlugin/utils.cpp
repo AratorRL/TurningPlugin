@@ -59,6 +59,13 @@ bool util::isInRotRange(Rotator currRot, Rotator goalRot, int range)
     return isInYawRange(currYaw, goalYaw, range);
 }
 
+Vector2 util::rotateVec2(Vector2F vec, float angle)
+{
+	int x = (int)((float)vec.X * cos(angle) - (float)vec.Y * sin(angle));
+	int y = (int)((float)vec.X * sin(angle) + (float)vec.Y * cos(angle));
+	return Vector2{ x, y };
+}
+
 void util::hookPhysicsTick(std::shared_ptr<GameWrapper> game, std::function<void(std::string eventName)> callback)
 {
     game->HookEvent("Function TAGame.Car_TA.SetVehicleInput", callback);

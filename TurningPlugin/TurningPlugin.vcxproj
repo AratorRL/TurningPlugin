@@ -123,15 +123,17 @@ copy "D:\rocketleague\plugins\TurningPlugin\TurningPlugin.set" "D:\Steam\SteamAp
   <ItemGroup>
     <ClInclude Include="Drawer.h" />
     <ClInclude Include="Exercise.h" />
+    <ClInclude Include="FixedTurnExercise.h" />
     <ClInclude Include="Logger.h" />
-    <ClInclude Include="TurningExercise.h" />
+    <ClInclude Include="FreeTurnExercise.h" />
     <ClInclude Include="TurningPlugin.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Drawer.cpp" />
+    <ClCompile Include="FixedTurnExercise.cpp" />
     <ClCompile Include="Logger.cpp" />
-    <ClCompile Include="TurningExercise.cpp" />
+    <ClCompile Include="FreeTurnExercise.cpp" />
     <ClCompile Include="TurningPlugin.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>

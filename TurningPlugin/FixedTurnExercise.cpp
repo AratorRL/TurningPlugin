@@ -35,6 +35,7 @@ void FixedTurnExercise::reset()
 	int rot = cvarManager->getCvar("turn_fixed_rot").getIntValue();
 	int boost = cvarManager->getCvar("turn_fixed_boost").getIntValue();
 	int goalYaw = cvarManager->getCvar("turn_fixed_goalrot").getIntValue();
+	this->goalRange = cvarManager->getCvar("turn_fixed_goalrange").getIntValue();
 	this->goalRot = { 0, goalYaw, 0 };
 	// car.SetRotation({ 0, 0, 0 });
 	car.SetLocation({ x, y, 50 });
@@ -69,7 +70,7 @@ void FixedTurnExercise::OnHitBall()
 		CarWrapper car = util::getCar(game);
 		Rotator finalRot = car.GetRotation();
 
-		if (util::isInRotRange(finalRot, goalRot, 2000))
+		if (util::isInRotRange(finalRot, goalRot, goalRange))
 		{
 			cvarManager->log("Goal reached.");
 		}
@@ -257,6 +258,32 @@ LinearColor FixedTurnExercise::getColor(TurningSnapshot snap)
 
 void FixedTurnExercise::visualize(CanvasWrapper canvas)
 {
+	if (this->isActive && !this->hitBall)
+	{
+		// draw indicator lines on the ground
+		BallWrapper ball = util::getBall(game);
+		Vector start = ball.GetLocation();
+		start.Z = 0;
+		Vector end = { 200, 0, 0 };
+
+		float angle = this->goalRange * M_PI / 32768;
+		float x = end.X * cos(angle) - (float)end.Y * sin(angle);
+		float y = end.X * sin(angle) + (float)end.Y * cos(angle);
+
+		Vector end1 = start + Vector{ y, x, 0 };
+		Vector end2 = start + Vector{ -y, x, 0 };
+
+		Vector2 end1Proj = canvas.Project(end1);
+		Vector2 end2Proj = canvas.Project(end2);
+		Vector2 startProj = canvas.Project(start);
+
+		canvas.SetColor(255, 0, 0, 255);
+
+		drawThiccLine(canvas, startProj, end1Proj);
+		drawThiccLine(canvas, startProj, end2Proj);
+	}
+	
+	
 	TurningRecording* recording = this->getLastRecording();
 
 	if (recording->snapshots.size() <= 0)

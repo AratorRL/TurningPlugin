@@ -67,64 +67,10 @@ void TurningPlugin::onLoad()
 	cvarManager->registerCvar("turn_fixed_rot", "15000", "Starting orientation", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_boost", "100", "Starting boost amount", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_goalrot", "-16384", "Goal orientation", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_fixed_goalrange", "3000", "Goal orientation range", true, false, 0, false, 0, true);
 
     logger = new Logger(cvarManager);
-    drawer = new Drawer(gameWrapper, logger);    
-    
-    // gameWrapper->HookEventPost("Function TAGame.Car_TA.ApplyBallImpactForces", std::bind(&TurningPlugin::OnHit, this));
-}
-
-void TurningPlugin::OnHit()
-{
-    if (!gameWrapper->IsInFreeplay())
-        return;
-
-    cvarManager->log("BOOMER");
-    ServerWrapper game = gameWrapper->GetGameEventAsServer();
-
-    CarWrapper car = game.GetGameCar();
-    BallWrapper ball = game.GetBall();
-
-    Vector diff = ball.GetLocation() - car.GetLocation();
-    Rotator orient = VectorToRotator(diff);
-    int yaw = orient.Yaw;
-
-    Rotator carOrient = car.GetRotation();
-    int carYaw = carOrient.Yaw;
-
-    // cvarManager->log(rotToString(orient));
-    cvarManager->log(to_string(orient.Yaw));
-
-    int range = 2000;
-
-    if (yaw < -16384 - range || yaw > -16384 + range)
-    {
-        freezeAll();
-    }
-
-    if (carYaw < -16384 - range || carYaw > -16384 + range)
-    {
-        freezeAll();
-    }
-}
-
-void TurningPlugin::freezeAll()
-{
-    if (!gameWrapper->IsInFreeplay())
-        return;
-
-    ServerWrapper game = gameWrapper->GetGameEventAsServer();
-
-    CarWrapper car = game.GetGameCar();
-    BallWrapper ball = game.GetBall();
-
-    car.SetVelocity({ 0, 0, 0 });
-    car.SetAngularVelocity({ 0, 0, 0 }, false);
-
-    ball.SetVelocity({ 0, 0, 0 });
-    ball.SetAngularVelocity({ 0, 0, 0 }, false);
-
-    // ball.SetbMovable(false);
+    drawer = new Drawer(gameWrapper, logger);
 }
 
 void TurningPlugin::onUnload()

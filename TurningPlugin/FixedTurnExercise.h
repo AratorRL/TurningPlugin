@@ -15,6 +15,7 @@ private:
 	Rotator startRot;
 	Rotator finalRot;
 	Rotator goalRot;
+	int goalRange;
 	Rotator lastRot;
 	int ticksWithSameRot;
 	bool isTurning;

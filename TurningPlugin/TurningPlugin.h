@@ -2,7 +2,6 @@
 #pragma comment (lib, "bakkesmod.lib")
 
 #include "utils.h"
-#include "Drawer.h"
 #include "Logger.h"
 #include "FreeTurnExercise.h"
 #include "FixedTurnExercise.h"
@@ -20,9 +19,8 @@ public:
 	FreeTurnExercise* getFreeTurnExercise();
 	FixedTurnExercise* getFixedTurnExercise();
 
-	Exercise* currentExercise;
+	TurningExercise* currentExercise;
 	Logger* logger;
-	Drawer* drawer;
 
 private:
     void turningTest();

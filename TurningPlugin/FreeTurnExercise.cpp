@@ -3,11 +3,10 @@
 #include "FreeTurnExercise.h"
 #include "utils.h"
 
-FreeTurnExercise::FreeTurnExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager, ExerciseType type)
+FreeTurnExercise::FreeTurnExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager)
 {
 	this->game = game;
 	this->cvarManager = cvarManager;
-	this->type = type;
 
 	this->recording[0] = new TurningRecording();
 	this->recording[1] = new TurningRecording();

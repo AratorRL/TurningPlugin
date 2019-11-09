@@ -3,10 +3,11 @@
 #include "bakkesmod/wrappers/GameWrapper.h"
 #include "bakkesmod/wrappers/cvarmanagerwrapper.h"
 
-#include "Exercise.h"
+#include "TurningExercise.h"
+#include "Recording.h"
 
 
-class FixedTurnExercise : public Exercise
+class FixedTurnExercise : public TurningExercise
 {
 private:
 	std::shared_ptr<GameWrapper> game;
@@ -30,12 +31,10 @@ private:
 	int drawingWidth = 200;
 	int drawingHeight = 200;
 
-	ExerciseType type;
-
 	void saveSnapshot();
 
 public:
-	FixedTurnExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager, ExerciseType type);
+	FixedTurnExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager);
 
 	void init() override;
 	void reset() override;

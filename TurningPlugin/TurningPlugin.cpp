@@ -8,20 +8,22 @@
 BAKKESMOD_PLUGIN(TurningPlugin, "Turning Plugin", "1.0", PLUGINTYPE_FREEPLAY);
 
 
+// get singleton FreeTurnExercise object
 FreeTurnExercise* TurningPlugin::getFreeTurnExercise()
 {
 	if (!freeTurnExercise)
 	{
-		freeTurnExercise = new FreeTurnExercise(gameWrapper, cvarManager, FreeTurn);
+		freeTurnExercise = new FreeTurnExercise(gameWrapper, cvarManager);
 	}
 	return freeTurnExercise;
 }
 
+// get singleton FixedTurnExercise object
 FixedTurnExercise* TurningPlugin::getFixedTurnExercise()
 {
 	if (!fixedTurnExercise)
 	{
-		fixedTurnExercise = new FixedTurnExercise(gameWrapper, cvarManager, FixedStart);
+		fixedTurnExercise = new FixedTurnExercise(gameWrapper, cvarManager);
 	}
 	return fixedTurnExercise;
 }
@@ -70,7 +72,6 @@ void TurningPlugin::onLoad()
 	cvarManager->registerCvar("turn_fixed_goalrange", "3000", "Goal orientation range", true, false, 0, false, 0, true);
 
     logger = new Logger(cvarManager);
-    drawer = new Drawer(gameWrapper, logger);
 }
 
 void TurningPlugin::onUnload()

@@ -1,11 +1,9 @@
 #include "TurningPlugin.h"
 #include "utils.h"
-#include "FreeTurnExercise.h"
-#include "FixedTurnExercise.h"
 
 #include "bakkesmod/wrappers/wrapperstructs.h";
 
-BAKKESMOD_PLUGIN(TurningPlugin, "Turning Plugin", "1.0", PLUGINTYPE_FREEPLAY);
+BAKKESMOD_PLUGIN(TurningPlugin, "Turning Plugin", "1.0", PERMISSION_OFFLINE);
 
 
 // get singleton FreeTurnExercise object
@@ -28,6 +26,16 @@ FixedTurnExercise* TurningPlugin::getFixedTurnExercise()
 	return fixedTurnExercise;
 }
 
+// get singleton CustomTrainingTurnExercise object
+CustomTrainingTurnExercise* TurningPlugin::getCustomTrainingTurnExercise()
+{
+	if (!customTrainingTurnExercise)
+	{
+		customTrainingTurnExercise = new CustomTrainingTurnExercise(gameWrapper, cvarManager);
+	}
+	return customTrainingTurnExercise;
+}
+
 void TurningPlugin::onLoad()
 {
     cvarManager->log("Turning Plugin loaded.");
@@ -40,6 +48,7 @@ void TurningPlugin::onLoad()
 			currentExercise->clear();
 		}
 		currentExercise = getFreeTurnExercise();
+		cvarManager->log("currentExercise set to FreeTurnExercise");
 		currentExercise->init();
     }, "", PERMISSION_FREEPLAY);
 
@@ -51,6 +60,15 @@ void TurningPlugin::onLoad()
 		currentExercise = getFixedTurnExercise();
 		currentExercise->init();
 	}, "", PERMISSION_FREEPLAY);
+
+	cvarManager->registerNotifier("turn_mode_customtraining", [this](std::vector<std::string>) {
+		if (currentExercise)
+		{
+			currentExercise->clear();
+		}
+		currentExercise = getCustomTrainingTurnExercise();
+		currentExercise->init();
+		}, "", PERMISSION_CUSTOM_TRAINING);
 
 	cvarManager->registerNotifier("turn_reset", [this](std::vector<std::string>) {
 		if (currentExercise)
@@ -72,6 +90,7 @@ void TurningPlugin::onLoad()
 	cvarManager->registerCvar("turn_fixed_goalrange", "3000", "Goal orientation range", true, false, 0, false, 0, true);
 
     logger = new Logger(cvarManager);
+
 }
 
 void TurningPlugin::onUnload()

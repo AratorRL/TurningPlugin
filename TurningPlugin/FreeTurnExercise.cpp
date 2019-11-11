@@ -212,7 +212,7 @@ void FreeTurnExercise::visualize(CanvasWrapper canvas)
 
 	canvas.SetPosition(Vector2{ 100, 100 });
 	canvas.SetColor(255, 0, 0, 255);
-	canvas.DrawString("# segments: " + to_string(recording->segments.size()));
+	// canvas.DrawString("# segments: " + to_string(recording->segments.size()));
 
 	canvas.SetPosition(Vector2{ drawingX, drawingY });
 	canvas.SetColor(100, 100, 100, 100);

@@ -17,7 +17,7 @@ void FixedTurnExercise::init()
 	cvarManager->log("Turning exercise init.");
 	game->RegisterDrawable(std::bind(&FixedTurnExercise::visualize, this, std::placeholders::_1));
 	util::hookPhysicsTick(game, std::bind(&FixedTurnExercise::tick, this));
-	game->HookEventPost("Function TAGame.Car_TA.ApplyBallImpactForces", std::bind(&FixedTurnExercise::OnHitBall, this));
+	game->HookEventWithCallerPost<CarWrapper>("Function TAGame.Car_TA.ApplyBallImpactForces", std::bind(&FixedTurnExercise::OnHitBall, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 	this->recording[0]->reset();
 	this->recording[1]->reset();
 	reset();
@@ -61,15 +61,32 @@ void FixedTurnExercise::reset()
 	this->hasJustReset = true;
 }
 
-void FixedTurnExercise::OnHitBall()
+struct OnHitBallParms
+{
+	void* ptr;
+	Vector HitLocation;
+	Vector HitNormal;
+};
+
+void FixedTurnExercise::OnHitBall(CarWrapper caller, void* params, std::string eventName)
 {
 	if (this->isActive)
 	{
 		cvarManager->log("onhitBall");
+
+		OnHitBallParms* parms = (OnHitBallParms*)params;
+		Vector hitLoc = parms->HitLocation;
+
 		CarWrapper car = util::getCar(game);
 		Rotator finalRot = car.GetRotation();
+		Vector carLoc = car.GetLocation();
+		Vector ballLoc = util::getBall(game).GetLocation();
 
-		if (util::isInRotRange(finalRot, goalRot, goalRange))
+		Vector relativeLoc = ballLoc - carLoc;
+
+		Rotator relativeRot = VectorToRotator(relativeLoc);
+
+		if (util::isInRotRange(finalRot, goalRot, goalRange) && util::isInRotRange(relativeRot, goalRot, goalRange))
 		{
 			cvarManager->log("Goal reached.");
 		}
@@ -243,16 +260,16 @@ void FixedTurnExercise::drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 e
 	}
 }
 
-LinearColor FixedTurnExercise::getColor(TurningSnapshot snap)
+RGBA FixedTurnExercise::getColor(TurningSnapshot snap)
 {
 	if (snap.boost && snap.powerslide)
-		return LinearColor{ 255, 255, 0, 255 };
+		return RGBA{ (char)255, (char)255, (char)0, (char)255 };
 	else if (snap.boost)
-		return LinearColor{ 255, 0, 0, 255 };
+		return RGBA{ (char)255, (char)0, (char)0, (char)255 };
 	else if (snap.powerslide)
-		return LinearColor{ 0, 255, 0, 255 };
+		return RGBA{ (char)0, (char)255, (char)0, (char)255 };
 	else
-		return LinearColor{ 255, 255, 255, 255 };
+		return RGBA{ (char)255, (char)255, (char)255, (char)255 };
 }
 
 void FixedTurnExercise::visualize(CanvasWrapper canvas)
@@ -315,12 +332,13 @@ void FixedTurnExercise::visualize(CanvasWrapper canvas)
 		Vector2 point = recording->points.at(i);
 		Vector2 coord = Vector2{ origin.X + (int)((float)point.X * scale), origin.Y + (int)((float)point.Y * scale) };
 
-		LinearColor color = getColor(recording->snapshots.at(i));
+		RGBA color = getColor(recording->snapshots.at(i));
 		canvas.SetColor(color.R, color.G, color.B, color.A);
 		drawThiccLine(canvas, lastCoord, coord);
 		lastCoord = coord;
-	}
 
+	}
+	
 	for (int i = 0; i < recording->segments.size(); i++)
 	{
 		TurningSegment seg = recording->segments.at(i);
@@ -332,7 +350,7 @@ void FixedTurnExercise::visualize(CanvasWrapper canvas)
 
 		int middleIndex = (seg.startIndex + nextIndex) / 2;
 
-		LinearColor color = getColor(recording->snapshots.at(middleIndex));
+		RGBA color = getColor(recording->snapshots.at(middleIndex));
 		canvas.SetColor(color.R, color.G, color.B, color.A);
 		Vector2 point = recording->points.at(middleIndex);
 		Vector2 coord = Vector2{ origin.X + (int)((float)point.X * scale), origin.Y + (int)((float)point.Y * scale) };
@@ -342,6 +360,6 @@ void FixedTurnExercise::visualize(CanvasWrapper canvas)
 			coord.X -= 20;
 
 		canvas.SetPosition(coord);
-		canvas.DrawString(to_string(nextIndex - seg.startIndex));
+		canvas.DrawString(to_string(nextIndex - seg.startIndex), 1.0, 1.0);
 	}
 }

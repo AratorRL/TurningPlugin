@@ -50,9 +50,9 @@ public:
 	void swapRecordingBuffers();
 
 	void analyzeTurn(TurningRecording* rec);
-	LinearColor getColor(TurningSnapshot snap);
+	RGBA getColor(TurningSnapshot snap);
 
-	void OnHitBall();
+	void OnHitBall(CarWrapper caller, void* params, std::string eventName);
 	void freezeAll();
 };
 

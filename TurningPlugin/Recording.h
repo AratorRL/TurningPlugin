@@ -9,7 +9,7 @@ struct TurningSnapshot
 	float throttle;
 	float steer;
 	bool boost;
-	long powerslide;
+	bool powerslide;
 };
 
 struct TurningSegment
@@ -41,4 +41,9 @@ public:
 		points.clear();
 		segments.clear();
 	}
+};
+
+struct RGBA
+{
+	char R, G, B, A;
 };

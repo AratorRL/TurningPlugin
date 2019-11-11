@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include "utils.h"
 
 CarWrapper util::getCar(std::shared_ptr<GameWrapper> game)
@@ -57,6 +59,11 @@ bool util::isInRotRange(Rotator currRot, Rotator goalRot, int range)
     int goalYaw = goalRot.Yaw;
 
     return isInYawRange(currYaw, goalYaw, range);
+}
+
+bool util::isInRange(Vector relativeLoc, Rotator targetRot, int range)
+{
+	float angle = targetRot.Yaw * M_PI / 32768 - M_PI / 2;
 }
 
 Vector2 util::rotateVec2(Vector2F vec, float angle)

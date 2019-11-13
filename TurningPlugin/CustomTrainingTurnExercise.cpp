@@ -14,10 +14,9 @@ CustomTrainingTurnExercise::CustomTrainingTurnExercise(std::shared_ptr<GameWrapp
 
 void CustomTrainingTurnExercise::init()
 {
-	cvarManager->log("Turning exercise init.");
 	game->RegisterDrawable(std::bind(&CustomTrainingTurnExercise::visualize, this, std::placeholders::_1));
 	util::hookPhysicsTick(game, std::bind(&CustomTrainingTurnExercise::tick, this));
-	game->HookEventPost("Function TAGame.Car_TA.ApplyBallImpactForces", std::bind(&CustomTrainingTurnExercise::OnHitBall, this));
+	game->HookEvent("Function TAGame.Car_TA.ApplyBallImpactForces", std::bind(&CustomTrainingTurnExercise::OnHitBall, this));
 	game->HookEvent("Function TAGame.GameEvent_TrainingEditor_TA.StartNewRound", std::bind(&CustomTrainingTurnExercise::OnResetRound, this));
 	this->recording[0]->reset();
 	this->recording[1]->reset();
@@ -79,6 +78,7 @@ void CustomTrainingTurnExercise::clear()
 	game->UnregisterDrawables();
 	util::unhookPhysicsTick(game);
 	game->UnhookEvent("Function TAGame.Car_TA.ApplyBallImpactForces");
+	game->UnhookEvent("Function TAGame.GameEvent_TrainingEditor_TA.StartNewRound");
 }
 
 void CustomTrainingTurnExercise::analyzeTurn(TurningRecording* rec)

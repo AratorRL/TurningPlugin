@@ -17,7 +17,7 @@ void FixedTurnExercise::init()
 {
 	game->RegisterDrawable(std::bind(&FixedTurnExercise::visualize, this, std::placeholders::_1));
 	util::hookPhysicsTick(game, std::bind(&FixedTurnExercise::tick, this));
-	game->HookEventWithCallerPost<CarWrapper>("Function TAGame.Car_TA.ApplyBallImpactForces", std::bind(&FixedTurnExercise::OnHitBall, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+	game->HookEventWithCaller<CarWrapper>("Function TAGame.Car_TA.ApplyBallImpactForces", std::bind(&FixedTurnExercise::OnHitBall, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 	this->recording[0]->reset();
 	this->recording[1]->reset();
 	reset();
@@ -28,24 +28,34 @@ void FixedTurnExercise::reset()
 	CarWrapper car = util::getCar(game);
 	car.Stop();
 	car.GetDodgeComponent().SetActive(false);
-	// car.SetLocation({ -1000, 1000, 50 });
-	float x = cvarManager->getCvar("turn_fixed_x").getFloatValue();
-	float y = cvarManager->getCvar("turn_fixed_y").getFloatValue();
-	int rot = cvarManager->getCvar("turn_fixed_rot").getIntValue();
-	int boost = cvarManager->getCvar("turn_fixed_boost").getIntValue();
-	int goalYaw = cvarManager->getCvar("turn_fixed_goalrot").getIntValue();
-	this->goalRange = cvarManager->getCvar("turn_fixed_goalrange").getIntValue();
-	this->goalRot = { 0, goalYaw, 0 };
-	// car.SetRotation({ 0, 0, 0 });
-	car.SetLocation({ x, y, 50 });
-	car.SetRotation({ 0, rot, 0 });
-
-	car.GetBoostComponent().SetBoostAmount((float)(boost / 100.0));
-
 	car.SetVelocity({ 0, 0, 0 });
+
 	BallWrapper ball = util::getBall(game);
 	ball.Stop();
-	ball.SetLocation({ 0, 500, 80 });
+
+	float x = cvarManager->getCvar("turn_fixed_x").getFloatValue();
+	float y = cvarManager->getCvar("turn_fixed_y").getFloatValue();
+	car.SetLocation({ x, y, 50 });
+
+	int yaw = cvarManager->getCvar("turn_fixed_rot").getIntValue();
+	Rotator rot = Rotator{ 0, yaw, 0 };
+	car.SetRotation(rot);
+
+	float carSpeed = cvarManager->getCvar("turn_fixed_carspeed").getFloatValue();
+	Vector forward = RotatorToVector(rot);
+	car.SetVelocity({ forward.X * carSpeed, forward.Y * carSpeed, forward.Z * carSpeed });
+
+	int boost = cvarManager->getCvar("turn_fixed_boost").getIntValue();
+	car.GetBoostComponent().SetBoostAmount((float)(boost / 100.0));
+
+	int targetYaw = cvarManager->getCvar("turn_fixed_targetrot").getIntValue();
+	this->targetRot = { 0, targetYaw, 0 };
+	this->targetMargin = cvarManager->getCvar("turn_fixed_targetmargin").getIntValue();
+
+	ball.SetLocation({ 0, 0, 92.74 });
+	
+	float ballSpeed = cvarManager->getCvar("turn_fixed_ballspeed").getFloatValue();
+	ball.SetVelocity({ 0, ballSpeed, 0 });
 
 	ball.SetbMovable(true);
 	car.SetbMovable(true);
@@ -72,8 +82,6 @@ void FixedTurnExercise::OnHitBall(CarWrapper caller, void* params, std::string e
 {
 	if (this->isActive)
 	{
-		cvarManager->log("onhitBall");
-
 		OnHitBallParms* parms = (OnHitBallParms*)params;
 		Vector hitLoc = parms->HitLocation;
 
@@ -86,7 +94,7 @@ void FixedTurnExercise::OnHitBall(CarWrapper caller, void* params, std::string e
 
 		Rotator relativeRot = VectorToRotator(relativeLoc);
 
-		if (!util::isInRotRange(finalRot, goalRot, goalRange) || !util::isInRotRange(relativeRot, goalRot, goalRange))
+		if (!util::isInRotRange(finalRot, targetRot, targetMargin) || !util::isInRotRange(relativeRot, targetRot, targetMargin))
 		{
 			freezeAll();
 		}
@@ -144,6 +152,11 @@ void FixedTurnExercise::clear()
 	game->UnregisterDrawables();
 	util::unhookPhysicsTick(game);
 	game->UnhookEvent("Function TAGame.Car_TA.ApplyBallImpactForces");
+
+	CarWrapper car = util::getCar(game);
+	BallWrapper ball = util::getBall(game);
+	car.SetbMovable(true);
+	ball.SetbMovable(true);
 }
 
 void FixedTurnExercise::analyzeTurn(TurningRecording* rec)
@@ -203,7 +216,7 @@ void FixedTurnExercise::visualize(CanvasWrapper canvas)
 		start.Z = 0;
 		Vector end = { 200, 0, 0 };
 
-		float angle = this->goalRange * M_PI / 32768;
+		float angle = this->targetMargin * M_PI / 32768;
 		float x = end.X * cos(angle) - (float)end.Y * sin(angle);
 		float y = end.X * sin(angle) + (float)end.Y * cos(angle);
 

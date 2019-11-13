@@ -12,8 +12,8 @@ class FixedTurnExercise : public TurnExercise
 private:
 	Rotator startRot;
 	Rotator finalRot;
-	Rotator goalRot;
-	int goalRange;
+	Rotator targetRot;
+	int targetMargin;
 	Rotator lastRot;
 	int ticksWithSameRot;
 	bool isTurning;

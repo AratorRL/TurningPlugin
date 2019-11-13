@@ -62,6 +62,7 @@ void TurningPlugin::onLoad()
 	}, "", PERMISSION_FREEPLAY);
 
 	cvarManager->registerNotifier("turn_mode_customtraining", [this](std::vector<std::string>) {
+		cvarManager->log("switching to customtraining");
 		if (currentExercise)
 		{
 			currentExercise->clear();
@@ -77,17 +78,27 @@ void TurningPlugin::onLoad()
 		}
 		else
 		{
-			cvarManager->log("No exercise initialized.");
+			cvarManager->log("No active exercise.");
 		}
 	}, "", PERMISSION_FREEPLAY);
+
+	cvarManager->registerNotifier("turn_mode_off", [this](std::vector<std::string>) {
+		if (currentExercise)
+		{
+			currentExercise->clear();
+			currentExercise = NULL;
+		}
+	}, "", PERMISSION_ALL);
 
 
 	cvarManager->registerCvar("turn_fixed_x", "-1000", "X coord of starting position relative to the ball", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_y", "-500", "Y coord of starting position relative to the ball", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_rot", "15000", "Starting orientation", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_boost", "100", "Starting boost amount", true, false, 0, false, 0, true);
-	cvarManager->registerCvar("turn_fixed_goalrot", "-16384", "Goal orientation", true, false, 0, false, 0, true);
-	cvarManager->registerCvar("turn_fixed_goalrange", "3000", "Goal orientation range", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_fixed_targetrot", "-16384", "Target orientation", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_fixed_targetmargin", "3000", "Target orientation margin", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_fixed_ballspeed", "500", "Starting speed of ball", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_fixed_carspeed", "500", "Starting speed of car", true, false, 0, false, 0, true);
 
     logger = new Logger(cvarManager);
 

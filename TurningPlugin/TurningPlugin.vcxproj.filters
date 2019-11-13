@@ -30,13 +30,13 @@
     <ClInclude Include="FixedTurnExercise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TurningExercise.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Recording.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CustomTrainingTurnExercise.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TurnExercise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -57,6 +57,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CustomTrainingTurnExercise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TurnExercise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Recording.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

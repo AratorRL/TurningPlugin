@@ -14,7 +14,6 @@ FreeTurnExercise::FreeTurnExercise(std::shared_ptr<GameWrapper> game, std::share
 
 void FreeTurnExercise::init()
 {
-	cvarManager->log("Turning exercise init.");
 	game->RegisterDrawable(std::bind(&FreeTurnExercise::visualize, this, std::placeholders::_1));
 	util::hookPhysicsTick(game, std::bind(&FreeTurnExercise::tick, this));
 	this->recording[0]->reset();
@@ -29,21 +28,6 @@ void FreeTurnExercise::reset()
 	this->currRecordingBuffer = 0;
 	
 	this->isActive = true;
-}
-
-TurningRecording* FreeTurnExercise::getCurrentRecording()
-{
-	return this->recording[currRecordingBuffer];
-}
-
-TurningRecording* FreeTurnExercise::getLastRecording()
-{
-	return this->recording[1 - currRecordingBuffer];
-}
-
-void FreeTurnExercise::swapRecordingBuffers()
-{
-	this->currRecordingBuffer = 1 - this->currRecordingBuffer;
 }
 
 void FreeTurnExercise::tick()
@@ -61,7 +45,6 @@ void FreeTurnExercise::tick()
 			this->goalRot = util::turnClockwise(startRot, 16384);
 			this->ticksWithSameRot = 0;
 			this->getCurrentRecording()->reset();
-			cvarManager->log("Start turning.");
 		}
 
 		if (isTurning)
@@ -94,13 +77,6 @@ void FreeTurnExercise::tick()
 
 void FreeTurnExercise::end()
 {
-	cvarManager->log("Turning exercise end.");	
-
-	if (util::isInRotRange(finalRot, goalRot, 2000))
-	{
-		cvarManager->log("Goal reached.");
-	}
-
 	swapRecordingBuffers();
 	analyzeTurn(this->getLastRecording());
 }
@@ -110,28 +86,6 @@ void FreeTurnExercise::clear()
 	this->isActive = false;
 	game->UnregisterDrawables();
 	util::unhookPhysicsTick(game);
-}
-
-void FreeTurnExercise::saveSnapshot()
-{
-	// cvarManager->log("saving input snapshot");
-
-	CarWrapper car = util::getCar(game);
-	Vector loc = car.GetLocation();
-	Rotator rot = car.GetRotation();
-
-	ControllerInput input = util::getCar(game).GetInput();
-
-	TurningRecording* recording = this->getCurrentRecording();
-
-	recording->snapshots.push_back({
-		loc,
-		rot,
-		input.Throttle,
-		input.Steer,
-		(bool)input.HoldingBoost,
-		(bool)input.Handbrake
-	});
 }
 
 void FreeTurnExercise::analyzeTurn(TurningRecording* rec)
@@ -178,41 +132,12 @@ void FreeTurnExercise::analyzeTurn(TurningRecording* rec)
 	rec->isTurningLeft = lastVec.X < firstVec.X;
 }
 
-void FreeTurnExercise::drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 end)
-{
-	for (int i = -1; i <= 1; i++)
-	{
-		for (int j = -1; j <= 1; j++)
-		{
-			Vector2 s = { start.X + i, start.Y + j };
-			Vector2 e = { end.X + i, end.Y + j };
-			cw.DrawLine(s, e);
-		}
-	}
-}
-
-LinearColor FreeTurnExercise::getColor(TurningSnapshot snap)
-{
-	if (snap.boost && snap.powerslide)
-		return LinearColor{ 255, 255, 0, 255 };
-	else if (snap.boost)
-		return LinearColor{ 255, 0, 0, 255 };
-	else if (snap.powerslide)
-		return LinearColor{ 0, 255, 0, 255 };
-	else
-		return LinearColor{ 255, 255, 255, 255 };
-}
-
 void FreeTurnExercise::visualize(CanvasWrapper canvas)
 {
 	TurningRecording* recording = this->getLastRecording();
 	
 	if (recording->snapshots.size() <= 0)
 		return;
-
-	canvas.SetPosition(Vector2{ 100, 100 });
-	canvas.SetColor(255, 0, 0, 255);
-	// canvas.DrawString("# segments: " + to_string(recording->segments.size()));
 
 	canvas.SetPosition(Vector2{ drawingX, drawingY });
 	canvas.SetColor(100, 100, 100, 100);
@@ -234,9 +159,9 @@ void FreeTurnExercise::visualize(CanvasWrapper canvas)
 		Vector2 point = recording->points.at(i);
 		Vector2 coord = Vector2{ origin.X + (int)((float)point.X * scale), origin.Y + (int)((float)point.Y * scale) };
 
-		LinearColor color = getColor(recording->snapshots.at(i));
+		RGBA color = getSnapshotColor(recording->snapshots.at(i));
 		canvas.SetColor(color.R, color.G, color.B, color.A);
-		drawThiccLine(canvas, lastCoord, coord);
+		util::drawThiccLine(canvas, lastCoord, coord);
 		lastCoord = coord;
 	}
 
@@ -251,7 +176,7 @@ void FreeTurnExercise::visualize(CanvasWrapper canvas)
 
 		int middleIndex = (seg.startIndex + nextIndex) / 2;
 
-		LinearColor color = getColor(recording->snapshots.at(middleIndex));
+		RGBA color = getSnapshotColor(recording->snapshots.at(middleIndex));
 		canvas.SetColor(color.R, color.G, color.B, color.A);
 		Vector2 point = recording->points.at(middleIndex);
 		Vector2 coord = Vector2{ origin.X + (int)((float)point.X * scale), origin.Y + (int)((float)point.Y * scale) };

@@ -22,7 +22,7 @@ public:
 	FixedTurnExercise* getFixedTurnExercise();
 	CustomTrainingTurnExercise* getCustomTrainingTurnExercise();
 
-	TurningExercise* currentExercise;
+	TurnExercise* currentExercise;
 	Logger* logger;
 
 private:

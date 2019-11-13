@@ -73,6 +73,19 @@ Vector2 util::rotateVec2(Vector2F vec, float angle)
 	return Vector2{ x, y };
 }
 
+void util::drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 end)
+{
+	for (int i = -1; i <= 1; i++)
+	{
+		for (int j = -1; j <= 1; j++)
+		{
+			Vector2 s = { start.X + i, start.Y + j };
+			Vector2 e = { end.X + i, end.Y + j };
+			cw.DrawLine(s, e);
+		}
+	}
+}
+
 void util::hookPhysicsTick(std::shared_ptr<GameWrapper> game, std::function<void(std::string eventName)> callback)
 {
     game->HookEvent("Function TAGame.Car_TA.SetVehicleInput", callback);

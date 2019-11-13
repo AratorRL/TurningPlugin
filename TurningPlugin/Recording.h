@@ -34,16 +34,12 @@ public:
 	std::vector<TurningSegment> segments;
 	bool isTurningLeft;
 
-	void reset()
-	{
-		snapshots.clear();
-		pbound = PointsBoundary{ 0, 0, 0, 0 };
-		points.clear();
-		segments.clear();
-	}
+	void reset();
 };
 
 struct RGBA
 {
 	char R, G, B, A;
 };
+
+RGBA getSnapshotColor(TurningSnapshot snap);

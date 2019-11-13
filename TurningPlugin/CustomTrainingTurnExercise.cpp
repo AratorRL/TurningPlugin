@@ -26,7 +26,6 @@ void CustomTrainingTurnExercise::init()
 
 void CustomTrainingTurnExercise::OnResetRound()
 {
-	cvarManager->log("reset round");
 	this->reset();
 }
 
@@ -45,7 +44,6 @@ void CustomTrainingTurnExercise::OnHitBall()
 {
 	if (this->isActive)
 	{
-		cvarManager->log("onhitBall");
 		CarWrapper car = util::getCar(game);
 		Rotator finalRot = car.GetRotation();
 
@@ -53,21 +51,6 @@ void CustomTrainingTurnExercise::OnHitBall()
 		this->isActive = false;
 		end();
 	}
-}
-
-TurningRecording* CustomTrainingTurnExercise::getCurrentRecording()
-{
-	return this->recording[currRecordingBuffer];
-}
-
-TurningRecording* CustomTrainingTurnExercise::getLastRecording()
-{
-	return this->recording[1 - currRecordingBuffer];
-}
-
-void CustomTrainingTurnExercise::swapRecordingBuffers()
-{
-	this->currRecordingBuffer = 1 - this->currRecordingBuffer;
 }
 
 void CustomTrainingTurnExercise::tick()
@@ -86,12 +69,8 @@ void CustomTrainingTurnExercise::tick()
 
 void CustomTrainingTurnExercise::end()
 {
-	cvarManager->log("Turning exercise end.");
-
 	swapRecordingBuffers();
 	analyzeTurn(this->getLastRecording());
-	cvarManager->log("end of end");
-	// this->isActive = false;
 }
 
 void CustomTrainingTurnExercise::clear()
@@ -102,44 +81,15 @@ void CustomTrainingTurnExercise::clear()
 	game->UnhookEvent("Function TAGame.Car_TA.ApplyBallImpactForces");
 }
 
-void CustomTrainingTurnExercise::saveSnapshot()
-{
-	// cvarManager->log("saving input snapshot");
-
-	CarWrapper car = util::getCar(game);
-	Vector loc = car.GetLocation();
-	Rotator rot = car.GetRotation();
-
-	ControllerInput input = util::getCar(game).GetInput();
-
-	TurningRecording* recording = this->getCurrentRecording();
-
-	recording->snapshots.push_back({
-		loc,
-		rot,
-		input.Throttle,
-		input.Steer,
-		(bool)input.HoldingBoost,
-		(bool)input.Handbrake
-		});
-}
-
 void CustomTrainingTurnExercise::analyzeTurn(TurningRecording* rec)
 {
-	cvarManager->log("analyze 1");
-	cvarManager->log(to_string(rec->snapshots.size()));
-
 	if (rec->snapshots.size() <= 0)
-	{
 		return;
-	}
 
 	TurningSnapshot firstSnap = rec->snapshots.front();
 	float startAngle = -firstSnap.rotation.Yaw * M_PI / 32768 - M_PI / 2;
 
 	int currentInput = INPUT_NONE;
-
-	cvarManager->log("analyze 2");
 
 	for (int i = 0; i < rec->snapshots.size(); i++)
 	{
@@ -172,37 +122,10 @@ void CustomTrainingTurnExercise::analyzeTurn(TurningRecording* rec)
 		currentInput = input;
 	}
 
-	cvarManager->log("analyze 3");
-
 	Vector2 firstVec = rec->points.front();
 	Vector2 lastVec = rec->points.back();
 
 	rec->isTurningLeft = lastVec.X < firstVec.X;
-}
-
-void CustomTrainingTurnExercise::drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 end)
-{
-	for (int i = -1; i <= 1; i++)
-	{
-		for (int j = -1; j <= 1; j++)
-		{
-			Vector2 s = { start.X + i, start.Y + j };
-			Vector2 e = { end.X + i, end.Y + j };
-			cw.DrawLine(s, e);
-		}
-	}
-}
-
-LinearColor CustomTrainingTurnExercise::getColor(TurningSnapshot snap)
-{
-	if (snap.boost && snap.powerslide)
-		return LinearColor{ 255, 255, 0, 255 };
-	else if (snap.boost)
-		return LinearColor{ 255, 0, 0, 255 };
-	else if (snap.powerslide)
-		return LinearColor{ 0, 255, 0, 255 };
-	else
-		return LinearColor{ 255, 255, 255, 255 };
 }
 
 void CustomTrainingTurnExercise::visualize(CanvasWrapper canvas)
@@ -210,14 +133,7 @@ void CustomTrainingTurnExercise::visualize(CanvasWrapper canvas)
 	TurningRecording* recording = this->getLastRecording();
 
 	if (recording->snapshots.size() <= 0)
-	{
-		//cvarManager->log("no snapshots in recording");
 		return;
-	}
-
-	// canvas.SetPosition(Vector2{ 100, 100 });
-	// canvas.SetColor(255, 0, 0, 255);
-	// canvas.DrawString("# segments: " + to_string(recording->segments.size()));
 
 	canvas.SetPosition(Vector2{ drawingX, drawingY });
 	canvas.SetColor(100, 100, 100, 100);
@@ -239,9 +155,9 @@ void CustomTrainingTurnExercise::visualize(CanvasWrapper canvas)
 		Vector2 point = recording->points.at(i);
 		Vector2 coord = Vector2{ origin.X + (int)((float)point.X * scale), origin.Y + (int)((float)point.Y * scale) };
 
-		LinearColor color = getColor(recording->snapshots.at(i));
+		RGBA color = getSnapshotColor(recording->snapshots.at(i));
 		canvas.SetColor(color.R, color.G, color.B, color.A);
-		drawThiccLine(canvas, lastCoord, coord);
+		util::drawThiccLine(canvas, lastCoord, coord);
 		lastCoord = coord;
 	}
 
@@ -256,7 +172,7 @@ void CustomTrainingTurnExercise::visualize(CanvasWrapper canvas)
 
 		int middleIndex = (seg.startIndex + nextIndex) / 2;
 
-		LinearColor color = getColor(recording->snapshots.at(middleIndex));
+		RGBA color = getSnapshotColor(recording->snapshots.at(middleIndex));
 		canvas.SetColor(color.R, color.G, color.B, color.A);
 		Vector2 point = recording->points.at(middleIndex);
 		Vector2 coord = Vector2{ origin.X + (int)((float)point.X * scale), origin.Y + (int)((float)point.Y * scale) };

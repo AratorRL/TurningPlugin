@@ -3,15 +3,12 @@
 #include "bakkesmod/wrappers/GameWrapper.h"
 #include "bakkesmod/wrappers/cvarmanagerwrapper.h"
 
-#include "TurningExercise.h"
+#include "TurnExercise.h"
 #include "Recording.h"
 
-class FreeTurnExercise : public TurningExercise
+class FreeTurnExercise : public TurnExercise
 {
 private:
-	std::shared_ptr<GameWrapper> game;
-	std::shared_ptr<CVarManagerWrapper> cvarManager;
-
 	Rotator startRot;
 	Rotator finalRot;
 	Rotator goalRot;
@@ -19,14 +16,6 @@ private:
 	int ticksWithSameRot;
 	bool isTurning;
 
-	TurningRecording* recording[2];
-	int currRecordingBuffer;
-	int drawingX = 300;
-	int drawingY = 380;
-	int drawingWidth = 200;
-	int drawingHeight = 200;
-
-	void saveSnapshot();
 
 public:
 	FreeTurnExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager);
@@ -37,13 +26,7 @@ public:
 	void end() override;
 	void clear() override;
 
-	void drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 end);
-	void visualize(CanvasWrapper canvas);
-
-	TurningRecording* getCurrentRecording();
-	TurningRecording* getLastRecording();
-	void swapRecordingBuffers();
+	void visualize(CanvasWrapper canvas) override;
 
 	void analyzeTurn(TurningRecording* rec);
-	LinearColor getColor(TurningSnapshot snap);
 };

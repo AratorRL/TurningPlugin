@@ -3,16 +3,13 @@
 #include "bakkesmod/wrappers/GameWrapper.h"
 #include "bakkesmod/wrappers/cvarmanagerwrapper.h"
 
-#include "TurningExercise.h"
+#include "TurnExercise.h"
 #include "Recording.h"
 
 
-class FixedTurnExercise : public TurningExercise
+class FixedTurnExercise : public TurnExercise
 {
 private:
-	std::shared_ptr<GameWrapper> game;
-	std::shared_ptr<CVarManagerWrapper> cvarManager;
-
 	Rotator startRot;
 	Rotator finalRot;
 	Rotator goalRot;
@@ -24,15 +21,6 @@ private:
 	bool isDriving;
 	bool hasJustReset;
 
-	TurningRecording* recording[2];
-	int currRecordingBuffer;
-	int drawingX = 300;
-	int drawingY = 380;
-	int drawingWidth = 200;
-	int drawingHeight = 200;
-
-	void saveSnapshot();
-
 public:
 	FixedTurnExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager);
 
@@ -42,15 +30,9 @@ public:
 	void end() override;
 	void clear() override;
 
-	void drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 end);
-	void visualize(CanvasWrapper canvas);
-
-	TurningRecording* getCurrentRecording();
-	TurningRecording* getLastRecording();
-	void swapRecordingBuffers();
+	void visualize(CanvasWrapper canvas) override;
 
 	void analyzeTurn(TurningRecording* rec);
-	RGBA getColor(TurningSnapshot snap);
 
 	void OnHitBall(CarWrapper caller, void* params, std::string eventName);
 	void freezeAll();

@@ -32,8 +32,6 @@ public:
 
 	void visualize(CanvasWrapper canvas) override;
 
-	void analyzeTurn(TurningRecording* rec);
-
 	void OnHitBall(CarWrapper caller, void* params, std::string eventName);
 	void freezeAll();
 };

@@ -30,10 +30,6 @@ public:
 	void end() override;
 	void clear() override;
 
-	void visualize(CanvasWrapper canvas) override;
-
-	void analyzeTurn(TurningRecording* rec);
-
 	void OnHitBall();
 	void OnResetRound();
 };

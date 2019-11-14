@@ -25,8 +25,4 @@ public:
 	void tick() override;
 	void end() override;
 	void clear() override;
-
-	void visualize(CanvasWrapper canvas) override;
-
-	void analyzeTurn(TurningRecording* rec);
 };

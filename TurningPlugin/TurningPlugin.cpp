@@ -91,6 +91,20 @@ void TurningPlugin::onLoad()
 	}, "", PERMISSION_ALL);
 
 
+	/*gameWrapper->HookEvent("Function TAGame.GameEvent_TrainingEditor_TA.Destroyed", [this](std::string eventName) {
+		cvarManager->log("customtraining destroyed");
+	});*/
+
+	gameWrapper->HookEvent("Function TAGame.GameEvent_Soccar_TA.Destroyed", [this](std::string eventName) {
+		cvarManager->log("freeplay destroyed");
+		if (currentExercise)
+		{
+			currentExercise->clear();
+			currentExercise = NULL;
+		}
+	});
+
+
 	cvarManager->registerCvar("turn_fixed_x", "-1000", "X coord of starting position relative to the ball", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_y", "-500", "Y coord of starting position relative to the ball", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_rot", "15000", "Starting orientation", true, false, 0, false, 0, true);

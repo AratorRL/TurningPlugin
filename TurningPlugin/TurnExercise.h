@@ -28,8 +28,9 @@ public:
 
 	virtual void clear() = 0;
 
-	virtual void visualize(CanvasWrapper canvas) = 0;
-
+	virtual void visualize(CanvasWrapper canvas);
+	
+	void analyzeTurn(TurningRecording* rec);
 
 	std::shared_ptr<GameWrapper> game;
 	std::shared_ptr<CVarManagerWrapper> cvarManager;

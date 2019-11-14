@@ -94,7 +94,9 @@ void FixedTurnExercise::OnHitBall(CarWrapper caller, void* params, std::string e
 
 		Rotator relativeRot = VectorToRotator(relativeLoc);
 
-		if (!util::isInRotRange(finalRot, targetRot, targetMargin) || !util::isInRotRange(relativeRot, targetRot, targetMargin))
+		bool freeze = cvarManager->getCvar("turn_fixed_freeze").getBoolValue();
+
+		if (freeze && (!util::isInRotRange(finalRot, targetRot, targetMargin) || !util::isInRotRange(relativeRot, targetRot, targetMargin)))
 		{
 			freezeAll();
 		}

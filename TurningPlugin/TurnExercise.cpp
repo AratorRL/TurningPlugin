@@ -92,17 +92,21 @@ void TurnExercise::visualize(CanvasWrapper canvas)
 	if (recording->snapshots.size() <= 0)
 		return;
 
+	int drawingX = cvarManager->getCvar("turn_graph_x").getIntValue();
+	int drawingY = cvarManager->getCvar("turn_graph_y").getIntValue();
+	int drawingScale = cvarManager->getCvar("turn_graph_scale").getIntValue();
+
 	canvas.SetPosition(Vector2{ drawingX, drawingY });
 	canvas.SetColor(100, 100, 100, 200);
-	canvas.DrawBox(Vector2{ drawingWidth, drawingHeight });
+	canvas.DrawBox(Vector2{ drawingScale, drawingScale });
 
-	Vector2 origin = Vector2{ drawingX, drawingY + drawingHeight };
+	Vector2 origin = Vector2{ drawingX, drawingY + drawingScale };
 	if (recording->isTurningLeft)
-		origin.X += drawingWidth;
+		origin.X += drawingScale;
 
 	int width = recording->pbound.maxX - recording->pbound.minX;
 	int height = recording->pbound.maxY - recording->pbound.minY;
-	float scale = (float)max(drawingWidth, drawingHeight) / (float)max(width, height);
+	float scale = (float)drawingScale / (float)max(width, height);
 
 	Vector2 lastPoint = recording->points.front();
 	Vector2 lastCoord = origin;
@@ -118,7 +122,7 @@ void TurnExercise::visualize(CanvasWrapper canvas)
 		lastCoord = coord;
 	}
 
-	canvas.SetPosition(Vector2{ drawingX + drawingWidth / 2 - 40, drawingY + drawingHeight + 20 });
+	canvas.SetPosition(Vector2{ drawingX + drawingScale / 2 - 40, drawingY + drawingScale + 20 });
 	canvas.SetColor(255, 255, 255, 255);
 	canvas.DrawString("Total # ticks: " + to_string(recording->points.size()));
 

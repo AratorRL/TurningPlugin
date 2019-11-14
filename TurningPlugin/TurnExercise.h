@@ -43,8 +43,4 @@ public:
 	
 	TurningRecording* recording[2];
 	int currRecordingBuffer;
-	int drawingX = 300;
-	int drawingY = 380;
-	int drawingWidth = 200;
-	int drawingHeight = 200;
 };

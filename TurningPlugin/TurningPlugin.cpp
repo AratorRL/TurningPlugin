@@ -113,6 +113,11 @@ void TurningPlugin::onLoad()
 	cvarManager->registerCvar("turn_fixed_targetmargin", "3000", "Target orientation margin", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_ballspeed", "500", "Starting speed of ball", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_carspeed", "500", "Starting speed of car", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_graph_scale", "200", "Size of turning graph", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_graph_x", "300", "X coordinate of turning graph", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_graph_y", "380", "Y coordinate of turning graph", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_free_straight_treshold", "30", "In free turn mode, number of ticks of driving straight before turn is considered to be finished", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_fixed_freeze", "1", "Freeze the car and ball if ball not approached with the correct angle", true, false, 0, false, 0, true);
 
     logger = new Logger(cvarManager);
 

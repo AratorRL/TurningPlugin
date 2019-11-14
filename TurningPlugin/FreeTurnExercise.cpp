@@ -58,7 +58,9 @@ void FreeTurnExercise::tick()
 			{
 				ticksWithSameRot++;
 
-				if (ticksWithSameRot > 30)
+				int straightTreshold = cvarManager->getCvar("turn_free_straight_treshold").getIntValue();
+
+				if (ticksWithSameRot > straightTreshold)
 				{
 					finalRot = currentRot;
 					isTurning = false;

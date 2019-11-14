@@ -37,8 +37,9 @@ void FixedTurnExercise::reset()
 	float y = cvarManager->getCvar("turn_fixed_y").getFloatValue();
 	car.SetLocation({ x, y, 50 });
 
-	int yaw = cvarManager->getCvar("turn_fixed_rot").getIntValue();
-	Rotator rot = Rotator{ 0, yaw, 0 };
+	float yaw = cvarManager->getCvar("turn_fixed_rot").getFloatValue();
+	int unrealYaw = (int)((yaw - 90) / 180 * 32768);
+	Rotator rot = Rotator{ 0, unrealYaw, 0 };
 	car.SetRotation(rot);
 
 	float carSpeed = cvarManager->getCvar("turn_fixed_carspeed").getFloatValue();
@@ -48,9 +49,12 @@ void FixedTurnExercise::reset()
 	int boost = cvarManager->getCvar("turn_fixed_boost").getIntValue();
 	car.GetBoostComponent().SetBoostAmount((float)(boost / 100.0));
 
-	int targetYaw = cvarManager->getCvar("turn_fixed_targetrot").getIntValue();
-	this->targetRot = { 0, targetYaw, 0 };
-	this->targetMargin = cvarManager->getCvar("turn_fixed_targetmargin").getIntValue();
+	float targetYaw = cvarManager->getCvar("turn_fixed_targetrot").getFloatValue();
+	int unrealTargetYaw = (int)((targetYaw - 90) / 180 * 32768);
+	this->targetRot = { 0, unrealTargetYaw, 0 };
+	
+	float targetMargin = cvarManager->getCvar("turn_fixed_targetmargin").getFloatValue();
+	this->targetMargin = (int)((targetMargin) / 180 * 32768);
 
 	ball.SetLocation({ 0, 0, 92.74 });
 	

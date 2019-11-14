@@ -1,3 +1,17 @@
 Turning Plugin
-9|$turning_cvar$
-9|$turning_cvar2$
+6|Mode|turn_mode|Off@off&Free roam@free&Fixed turn@fixed&Custom training@customtraining
+8|
+4|Car start location X|turn_fixed_x|-2000|2000
+4|Car start location Y|turn_fixed_y|-2000|2000
+4|Car start angle|turn_fixed_rot|-180|180
+4|Car start speed|turn_fixed_carspeed|-2300|2300
+5|Car boost amount|turn_fixed_boost|-2300|2300
+4|Target angle|turn_fixed_targetrot|-180|180
+4|Target angle margin|turn_fixed_targetmargin|0|180
+1|Freeze if ball hit with incorrect angle|turn_fixed_freeze
+8|
+5|Number of ticks driving straight before turn ends|turn_free_straight_treshold|0|240
+8|
+4|Graph scale|turn_graph_scale|0|600
+5|Graph location X|turn_graph_x|0|1920
+5|Graph location Y|turn_graph_y|0|1080

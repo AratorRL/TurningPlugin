@@ -42,7 +42,7 @@ void TurningPlugin::onLoad()
 
     cvarManager->registerNotifier("turning_test", std::bind(&TurningPlugin::turningTest, this), "", PERMISSION_FREEPLAY);
     
-	cvarManager->registerNotifier("turn_mode_freeturn", [this](std::vector<std::string>) {
+	cvarManager->registerNotifier("turn_mode_free", [this](std::vector<std::string>) {
 		if (currentExercise)
 		{
 			currentExercise->clear();
@@ -52,7 +52,7 @@ void TurningPlugin::onLoad()
 		currentExercise->init();
     }, "", PERMISSION_FREEPLAY);
 
-	cvarManager->registerNotifier("turn_mode_fixedturn", [this](std::vector<std::string>) {
+	cvarManager->registerNotifier("turn_mode_fixed", [this](std::vector<std::string>) {
 		if (currentExercise)
 		{
 			currentExercise->clear();
@@ -104,20 +104,43 @@ void TurningPlugin::onLoad()
 		}
 	});
 
+	cvarManager->registerCvar("turn_mode", "off", "Turning plugin mode", true, false, 0, false, 0, true)
+		.addOnValueChanged([this](std::string oldValue, CVarWrapper cvar) {
+		std::string newValue = cvar.getStringValue();
+
+		if (newValue == "free")
+		{
+			cvarManager->executeCommand("turn_mode_free");
+		}
+		else if (newValue == "fixed")
+		{
+			cvarManager->executeCommand("turn_mode_fixed");
+		}
+		else if (newValue == "customtraining")
+		{
+			cvarManager->executeCommand("turn_mode_customtraining");
+		}
+		else if (newValue == "off")
+		{
+			cvarManager->executeCommand("turn_mode_off");
+		}
+	});
 
 	cvarManager->registerCvar("turn_fixed_x", "-1000", "X coord of starting position relative to the ball", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_y", "-500", "Y coord of starting position relative to the ball", true, false, 0, false, 0, true);
-	cvarManager->registerCvar("turn_fixed_rot", "15000", "Starting orientation", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_fixed_rot", "160", "Starting orientation", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_boost", "100", "Starting boost amount", true, false, 0, false, 0, true);
-	cvarManager->registerCvar("turn_fixed_targetrot", "-16384", "Target orientation", true, false, 0, false, 0, true);
-	cvarManager->registerCvar("turn_fixed_targetmargin", "3000", "Target orientation margin", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_fixed_targetrot", "0", "Target orientation", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_fixed_targetmargin", "20", "Target orientation margin", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_ballspeed", "500", "Starting speed of ball", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_carspeed", "500", "Starting speed of car", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_fixed_freeze", "1", "Freeze the car and ball if ball not approached with the correct angle", true, false, 0, false, 0, true);
+
 	cvarManager->registerCvar("turn_graph_scale", "200", "Size of turning graph", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_graph_x", "300", "X coordinate of turning graph", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_graph_y", "380", "Y coordinate of turning graph", true, false, 0, false, 0, true);
+
 	cvarManager->registerCvar("turn_free_straight_treshold", "30", "In free turn mode, number of ticks of driving straight before turn is considered to be finished", true, false, 0, false, 0, true);
-	cvarManager->registerCvar("turn_fixed_freeze", "1", "Freeze the car and ball if ball not approached with the correct angle", true, false, 0, false, 0, true);
 
     logger = new Logger(cvarManager);
 

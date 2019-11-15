@@ -84,6 +84,8 @@ struct OnHitBallParms
 
 void FixedTurnExercise::OnHitBall(CarWrapper caller, void* params, std::string eventName)
 {
+	cvarManager->log("on hit ball");
+	
 	if (this->isActive)
 	{
 		OnHitBallParms* parms = (OnHitBallParms*)params;
@@ -139,7 +141,7 @@ void FixedTurnExercise::tick()
 		ControllerInput input = util::getCar(game).GetInput();
 		this->isDriving = input.Throttle != 0.0;
 
-		if (this->isDriving && !this->hitBall)
+		if (/*this->isDriving && */!this->hitBall)
 		{
 			saveSnapshot();
 		}

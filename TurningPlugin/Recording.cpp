@@ -8,14 +8,24 @@ void TurningRecording::reset()
 	segments.clear();
 }
 
-RGBA getSnapshotColor(TurningSnapshot snap)
+RGBA getSnapshotColor(TurningSnapshot snap, bool showBoost, bool showPowerslide, bool showSteer)
 {
-	if (snap.boost && snap.powerslide)
-		return RGBA{ (char)255, (char)255, (char)0, (char)255 };
-	else if (snap.boost)
-		return RGBA{ (char)255, (char)0, (char)0, (char)255 };
-	else if (snap.powerslide)
-		return RGBA{ (char)0, (char)255, (char)0, (char)255 };
-	else
-		return RGBA{ (char)255, (char)255, (char)255, (char)255 };
+	char red = (showBoost && snap.boost) ? (char)255 : 0;
+	char green = (showPowerslide && snap.powerslide) ? (char)255 : 0;
+	char blue = (showSteer && snap.steer != 0) ? (char)255 : 0;
+
+	if (red == 0 && green == 0 && blue == 0)
+	{
+		red = 255;
+		green = 255;
+		blue = 255;
+	}
+	else if (showBoost && (red == (char)255) && showPowerslide && (green == (char)255) && showSteer && (blue == (char)255))
+	{
+		red = 0;
+		green = 0;
+		blue = 0;
+	}
+
+	return RGBA{ red, green, blue, (char)255 };
 }

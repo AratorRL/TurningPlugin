@@ -41,12 +41,19 @@ void TurnExercise::saveSnapshot()
 void TurnExercise::analyzeTurn(TurningRecording* rec)
 {
 	if (rec->snapshots.size() <= 0)
+	{
+		cvarManager->log("analyze: no snapshots");
 		return;
+	}
 
 	TurningSnapshot firstSnap = rec->snapshots.front();
 	float startAngle = -firstSnap.rotation.Yaw * M_PI / 32768 - M_PI / 2;
 
-	int currentInput = INPUT_NONE;
+	int currentInput = -1;
+
+	bool colorBoost = cvarManager->getCvar("turn_graph_boost").getBoolValue();
+	bool colorPowerslide = cvarManager->getCvar("turn_graph_powerslide").getBoolValue();
+	bool colorSteer = cvarManager->getCvar("turn_graph_steer").getBoolValue();
 
 	for (int i = 0; i < rec->snapshots.size(); i++)
 	{
@@ -65,12 +72,14 @@ void TurnExercise::analyzeTurn(TurningRecording* rec)
 			rec->pbound.maxY = vec.Y;
 
 		int input = INPUT_NONE;
-		if (snap.boost)
+		if (snap.boost && colorBoost)
 			input += INPUT_BOOST;
-		if (snap.powerslide)
+		if (snap.powerslide && colorPowerslide)
 			input += INPUT_POWERSLIDE;
-		if (snap.throttle)
-			input += INPUT_THROTTLE;
+		/*if (snap.throttle)
+			input += INPUT_THROTTLE;*/
+		if (snap.steer != 0 && colorSteer)
+			input += INPUT_STEER;
 
 		if (input != currentInput)
 		{
@@ -78,6 +87,8 @@ void TurnExercise::analyzeTurn(TurningRecording* rec)
 		}
 		currentInput = input;
 	}
+
+	cvarManager->log("# segments: " + to_string(rec->segments.size()));
 
 	Vector2 firstVec = rec->points.front();
 	Vector2 lastVec = rec->points.back();
@@ -96,9 +107,9 @@ void TurnExercise::visualize(CanvasWrapper canvas)
 	int drawingY = cvarManager->getCvar("turn_graph_y").getIntValue();
 	int drawingScale = cvarManager->getCvar("turn_graph_scale").getIntValue();
 
-	canvas.SetPosition(Vector2{ drawingX, drawingY });
+	/*canvas.SetPosition(Vector2{ drawingX, drawingY });
 	canvas.SetColor(100, 100, 100, 200);
-	canvas.DrawBox(Vector2{ drawingScale, drawingScale });
+	canvas.DrawBox(Vector2{ drawingScale, drawingScale });*/
 
 	Vector2 origin = Vector2{ drawingX, drawingY + drawingScale };
 	if (recording->isTurningLeft)
@@ -111,12 +122,16 @@ void TurnExercise::visualize(CanvasWrapper canvas)
 	Vector2 lastPoint = recording->points.front();
 	Vector2 lastCoord = origin;
 
+	bool colorBoost = cvarManager->getCvar("turn_graph_boost").getBoolValue();
+	bool colorPowerslide = cvarManager->getCvar("turn_graph_powerslide").getBoolValue();
+	bool colorSteer = cvarManager->getCvar("turn_graph_steer").getBoolValue();
+
 	for (int i = 1; i < recording->points.size(); i++)
 	{
 		Vector2 point = recording->points.at(i);
 		Vector2 coord = Vector2{ origin.X + (int)((float)point.X * scale), origin.Y + (int)((float)point.Y * scale) };
 
-		RGBA color = getSnapshotColor(recording->snapshots.at(i));
+		RGBA color = getSnapshotColor(recording->snapshots.at(i), colorBoost, colorPowerslide, colorSteer);
 		canvas.SetColor(color.R, color.G, color.B, color.A);
 		util::drawThiccLine(canvas, lastCoord, coord);
 		lastCoord = coord;
@@ -133,11 +148,11 @@ void TurnExercise::visualize(CanvasWrapper canvas)
 		if (i < recording->segments.size() - 1)
 			nextIndex = recording->segments.at(i + 1).startIndex;
 		else
-			nextIndex = recording->points.size() - 1;
+			nextIndex = recording->points.size();
 
 		int middleIndex = (seg.startIndex + nextIndex) / 2;
 
-		RGBA color = getSnapshotColor(recording->snapshots.at(middleIndex));
+		RGBA color = getSnapshotColor(recording->snapshots.at(middleIndex), colorBoost, colorPowerslide, colorSteer);
 		canvas.SetColor(color.R, color.G, color.B, color.A);
 		Vector2 point = recording->points.at(middleIndex);
 		Vector2 coord = Vector2{ origin.X + (int)((float)point.X * scale), origin.Y + (int)((float)point.Y * scale) };

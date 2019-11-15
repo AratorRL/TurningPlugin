@@ -42,4 +42,4 @@ struct RGBA
 	char R, G, B, A;
 };
 
-RGBA getSnapshotColor(TurningSnapshot snap);
+RGBA getSnapshotColor(TurningSnapshot snap, bool showBoost, bool showPowerslide, bool showSteer);

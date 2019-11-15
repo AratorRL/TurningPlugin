@@ -19,6 +19,11 @@ Turning Plugin
 4|Graph scale|turn_graph_scale|0|600
 5|Graph location X|turn_graph_x|0|1920
 5|Graph location Y|turn_graph_y|0|1080
+1|Color boost|turn_graph_boost
+7|
+1|Color powerslide|turn_graph_powerslide
+7|
+1|Color steer|turn_graph_steer
 8|
 9|Custom training settings:
 1|Show turning graph after ball hit|turn_customtraining

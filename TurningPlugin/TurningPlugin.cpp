@@ -146,6 +146,11 @@ void TurningPlugin::onLoad()
 		}
 	});
 
+
+	cvarManager->registerCvar("turn_graph_boost", "0", "Let color depend on boost being held or not", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_graph_powerslide", "0", "Let color depend on powerslide being held or not", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_graph_steer", "0", "Let color depend on steering value being 0 or not", true, false, 0, false, 0, true);
+
     logger = new Logger(cvarManager);
 
 	cvarManager->executeCommand("cl_settings_refreshplugins");

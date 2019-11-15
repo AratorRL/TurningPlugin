@@ -7,6 +7,7 @@
 #define INPUT_BOOST 1
 #define INPUT_POWERSLIDE 2
 #define INPUT_THROTTLE 4
+#define INPUT_STEER 8
 
 class TurnExercise
 {

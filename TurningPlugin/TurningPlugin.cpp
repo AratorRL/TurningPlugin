@@ -42,7 +42,7 @@ void TurningPlugin::onLoad()
 
     cvarManager->registerNotifier("turning_test", std::bind(&TurningPlugin::turningTest, this), "", PERMISSION_FREEPLAY);
     
-	cvarManager->registerNotifier("turn_mode_free", [this](std::vector<std::string>) {
+	cvarManager->registerNotifier("turn_start_free", [this](std::vector<std::string>) {
 		if (currentExercise)
 		{
 			currentExercise->clear();
@@ -52,7 +52,8 @@ void TurningPlugin::onLoad()
 		currentExercise->init();
     }, "", PERMISSION_FREEPLAY);
 
-	cvarManager->registerNotifier("turn_mode_fixed", [this](std::vector<std::string>) {
+	cvarManager->registerNotifier("turn_start_fixed", [this](std::vector<std::string>) {
+		cvarManager->log("set mode to fixed");
 		if (currentExercise)
 		{
 			currentExercise->clear();
@@ -61,7 +62,7 @@ void TurningPlugin::onLoad()
 		currentExercise->init();
 	}, "", PERMISSION_FREEPLAY);
 
-	cvarManager->registerNotifier("turn_mode_customtraining", [this](std::vector<std::string>) {
+	cvarManager->registerNotifier("turn_start_customtraining", [this](std::vector<std::string>) {
 		cvarManager->log("switching to customtraining");
 		if (currentExercise)
 		{
@@ -69,7 +70,7 @@ void TurningPlugin::onLoad()
 		}
 		currentExercise = getCustomTrainingTurnExercise();
 		currentExercise->init();
-		}, "", PERMISSION_CUSTOM_TRAINING);
+	}, "", PERMISSION_CUSTOM_TRAINING);
 
 	cvarManager->registerNotifier("turn_reset", [this](std::vector<std::string>) {
 		if (currentExercise)
@@ -82,7 +83,7 @@ void TurningPlugin::onLoad()
 		}
 	}, "", PERMISSION_FREEPLAY);
 
-	cvarManager->registerNotifier("turn_mode_off", [this](std::vector<std::string>) {
+	cvarManager->registerNotifier("turn_clear_exercise", [this](std::vector<std::string>) {
 		if (currentExercise)
 		{
 			currentExercise->clear();
@@ -90,18 +91,16 @@ void TurningPlugin::onLoad()
 		}
 	}, "", PERMISSION_ALL);
 
-
-	/*gameWrapper->HookEvent("Function TAGame.GameEvent_TrainingEditor_TA.Destroyed", [this](std::string eventName) {
-		cvarManager->log("customtraining destroyed");
-	});*/
+	gameWrapper->HookEvent("Function GameEvent_TrainingEditor_TA.Countdown.BeginState", [this](std::string eventName) {
+		cvarManager->log("custom training init");
+		if (cvarManager->getCvar("turn_customtraining").getBoolValue())
+		{
+			cvarManager->executeCommand("turn_start_customtraining");
+		}
+	});
 
 	gameWrapper->HookEvent("Function TAGame.GameEvent_Soccar_TA.Destroyed", [this](std::string eventName) {
-		cvarManager->log("freeplay destroyed");
-		if (currentExercise)
-		{
-			currentExercise->clear();
-			currentExercise = NULL;
-		}
+		cvarManager->getCvar("turn_mode").setValue("off");
 	});
 
 	cvarManager->registerCvar("turn_mode", "off", "Turning plugin mode", true, false, 0, false, 0, true)
@@ -110,19 +109,15 @@ void TurningPlugin::onLoad()
 
 		if (newValue == "free")
 		{
-			cvarManager->executeCommand("turn_mode_free");
+			cvarManager->executeCommand("turn_start_free");
 		}
 		else if (newValue == "fixed")
 		{
-			cvarManager->executeCommand("turn_mode_fixed");
-		}
-		else if (newValue == "customtraining")
-		{
-			cvarManager->executeCommand("turn_mode_customtraining");
+			cvarManager->executeCommand("turn_start_fixed");
 		}
 		else if (newValue == "off")
 		{
-			cvarManager->executeCommand("turn_mode_off");
+			cvarManager->executeCommand("turn_clear_exercise");
 		}
 	});
 
@@ -141,8 +136,21 @@ void TurningPlugin::onLoad()
 	cvarManager->registerCvar("turn_graph_y", "380", "Y coordinate of turning graph", true, false, 0, false, 0, true);
 
 	cvarManager->registerCvar("turn_free_straight_treshold", "30", "In free turn mode, number of ticks of driving straight before turn is considered to be finished", true, false, 0, false, 0, true);
+	
+	cvarManager->registerCvar("turn_customtraining", "0", "Show turning graph after ball hit in custom training", true, false, 0, false, 0, true)
+		.addOnValueChanged([this](std::string oldValue, CVarWrapper cvar) {
+		bool newValue = cvar.getBoolValue();
+		if (!newValue)
+		{
+			cvarManager->executeCommand("turn_clear_exercise");
+		}
+	});
 
     logger = new Logger(cvarManager);
+
+	cvarManager->executeCommand("cl_settings_refreshplugins");
+
+	
 
 }
 

@@ -12,19 +12,14 @@
 class TurnExercise
 {
 public:
-	// whether the exercise is still active
 	bool isActive;
 
-	// setup valid starting state, if needed
 	virtual void init() = 0;
 
-	// reset the exercise
 	virtual void reset() = 0;
 
-	// gets called every physics tick while exercise is active
 	virtual void tick() = 0;
 
-	// end the exercise
 	virtual void end() = 0;
 
 	virtual void clear() = 0;
@@ -38,10 +33,12 @@ public:
 
 
 	void saveSnapshot();
-	TurningRecording* getCurrentRecording();
-	TurningRecording* getLastRecording();
-	void swapRecordingBuffers();
 	
+	// 2 recording buffers: one for current recording, other for previous one
+	// roles get swapped every new turn
 	TurningRecording* recording[2];
 	int currRecordingBuffer;
+	void swapRecordingBuffers();
+	TurningRecording* getCurrentRecording();
+	TurningRecording* getLastRecording();
 };

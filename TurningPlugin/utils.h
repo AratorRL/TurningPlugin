@@ -1,18 +1,5 @@
 #pragma once
-
 #include "bakkesmod/wrappers/GameWrapper.h"
-
-#define LAYER_MONITOR 1
-
-class Logger;
-class Drawer;
-
-struct GlobalObjects
-{
-    Logger* logger;
-    Drawer* drawer;
-    std::shared_ptr<GameWrapper> game;
-};
 
 namespace util {
     CarWrapper getCar(std::shared_ptr<GameWrapper> game);

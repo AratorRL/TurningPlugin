@@ -84,8 +84,6 @@ struct OnHitBallParms
 
 void FixedTurnExercise::OnHitBall(CarWrapper caller, void* params, std::string eventName)
 {
-	cvarManager->log("on hit ball");
-	
 	if (this->isActive)
 	{
 		OnHitBallParms* parms = (OnHitBallParms*)params;

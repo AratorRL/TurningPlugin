@@ -2,7 +2,6 @@
 #pragma comment (lib, "bakkesmod.lib")
 
 #include "utils.h"
-#include "Logger.h"
 #include "FreeTurnExercise.h"
 #include "FixedTurnExercise.h"
 #include "CustomTrainingTurnExercise.h"
@@ -23,12 +22,7 @@ public:
 	CustomTrainingTurnExercise* getCustomTrainingTurnExercise();
 
 	TurnExercise* currentExercise;
-	Logger* logger;
 
 private:
-    void turningTest();
-    void OnHit();
-    void freezeAll();
-
-	void OnSetInput(CarWrapper caller, void* params, std::string eventName);
+	void switchToExercise(TurnExercise* exercise);
 };

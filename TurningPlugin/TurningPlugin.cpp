@@ -36,40 +36,30 @@ CustomTrainingTurnExercise* TurningPlugin::getCustomTrainingTurnExercise()
 	return customTrainingTurnExercise;
 }
 
+void TurningPlugin::switchToExercise(TurnExercise* exercise)
+{
+	if (currentExercise)
+	{
+		currentExercise->clear();
+	}
+	currentExercise = exercise;
+	currentExercise->init();
+}
+
 void TurningPlugin::onLoad()
 {
     cvarManager->log("Turning Plugin loaded.");
 
-    cvarManager->registerNotifier("turning_test", std::bind(&TurningPlugin::turningTest, this), "", PERMISSION_FREEPLAY);
-    
 	cvarManager->registerNotifier("turn_start_free", [this](std::vector<std::string>) {
-		if (currentExercise)
-		{
-			currentExercise->clear();
-		}
-		currentExercise = getFreeTurnExercise();
-		cvarManager->log("currentExercise set to FreeTurnExercise");
-		currentExercise->init();
+		switchToExercise(getFreeTurnExercise());
     }, "", PERMISSION_FREEPLAY);
 
 	cvarManager->registerNotifier("turn_start_fixed", [this](std::vector<std::string>) {
-		cvarManager->log("set mode to fixed");
-		if (currentExercise)
-		{
-			currentExercise->clear();
-		}
-		currentExercise = getFixedTurnExercise();
-		currentExercise->init();
+		switchToExercise(getFixedTurnExercise());
 	}, "", PERMISSION_FREEPLAY);
 
 	cvarManager->registerNotifier("turn_start_customtraining", [this](std::vector<std::string>) {
-		cvarManager->log("switching to customtraining");
-		if (currentExercise)
-		{
-			currentExercise->clear();
-		}
-		currentExercise = getCustomTrainingTurnExercise();
-		currentExercise->init();
+		switchToExercise(getCustomTrainingTurnExercise());
 	}, "", PERMISSION_CUSTOM_TRAINING);
 
 	cvarManager->registerNotifier("turn_reset", [this](std::vector<std::string>) {
@@ -151,10 +141,8 @@ void TurningPlugin::onLoad()
 	cvarManager->registerCvar("turn_graph_powerslide", "0", "Let color depend on powerslide being held or not", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_graph_steer", "0", "Let color depend on steering value being 0 or not", true, false, 0, false, 0, true);
 
-    logger = new Logger(cvarManager);
-
+	// update plugins tab
 	cvarManager->executeCommand("cl_settings_refreshplugins");
-
 	
 
 }
@@ -162,22 +150,4 @@ void TurningPlugin::onLoad()
 void TurningPlugin::onUnload()
 {
     cvarManager->log("Turning Plugin unloaded.");
-}
-
-void TurningPlugin::turningTest()
-{
-    cvarManager->log("turning test");
-
-    if (!gameWrapper->IsInFreeplay())
-        return;
-
-    ServerWrapper game = gameWrapper->GetGameEventAsServer();
-
-    CarWrapper car = game.GetGameCar();
-    Vector carLoc = car.GetLocation();
-    cvarManager->log(util::vecToString(carLoc));
-
-    BallWrapper ball = game.GetBall();
-    Vector ballLoc = ball.GetLocation();
-    cvarManager->log(util::vecToString(ballLoc));
 }

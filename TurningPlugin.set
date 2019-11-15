@@ -1,5 +1,5 @@
 Turning Plugin
-6|Mode|turn_mode|Off@off&Fixed turn@fixed&Free roam@free
+6|Freeplay mode|turn_mode|Off@off&Fixed turn@fixed&Free roam@free
 8|
 9|Fixed turn settings: (Reset shot with "turn_reset". Bind it to a key in F2->Bindings)
 4|Car start location X|turn_fixed_x|-2000|2000
@@ -9,7 +9,7 @@ Turning Plugin
 4|Ball start speed|turn_fixed_ballspeed|0|2300
 5|Car boost amount|turn_fixed_boost|0|100
 4|Target angle|turn_fixed_targetrot|-180|180
-4|Target angle margin|turn_fixed_targetmargin|0|180
+4|Target angle accuracy|turn_fixed_targetmargin|0|180
 1|Freeze if ball hit with incorrect angle|turn_fixed_freeze
 8|
 9|Free roam settings:
@@ -26,4 +26,4 @@ Turning Plugin
 1|Color steer|turn_graph_steer
 8|
 9|Custom training settings:
-1|Show turning graph after ball hit|turn_customtraining
+1|Show turning graph after ball hit om custom training|turn_customtraining

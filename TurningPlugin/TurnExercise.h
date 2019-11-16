@@ -15,13 +15,9 @@ public:
 	bool isActive;
 
 	virtual void init() = 0;
-
 	virtual void reset() = 0;
-
 	virtual void tick() = 0;
-
 	virtual void end() = 0;
-
 	virtual void clear() = 0;
 
 	virtual void visualize(CanvasWrapper canvas);

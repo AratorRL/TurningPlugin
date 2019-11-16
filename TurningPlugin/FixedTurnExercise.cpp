@@ -95,28 +95,9 @@ void FixedTurnExercise::OnHitBall(CarWrapper caller, void* params, std::string e
 		Vector ballLoc = util::getBall(game).GetLocation();
 
 		Vector relativeLoc = ballLoc - carLoc;
-
 		Rotator relativeRot = VectorToRotator(relativeLoc);
 
 		bool freeze = cvarManager->getCvar("turn_fixed_freeze").getBoolValue();
-
-		cvarManager->log("final rot: " + to_string(finalRot.Yaw));
-		cvarManager->log("target rot: " + to_string(targetRot.Yaw));
-
-		int currYaw = finalRot.Yaw;
-		int goalYaw = targetRot.Yaw;
-
-		// make the difference is < 65536
-		while (abs(currYaw - goalYaw) >= 32768)
-		{
-			if (currYaw < goalYaw)
-				currYaw += 65536;
-			else
-				goalYaw += 65536;
-		}
-
-		cvarManager->log("currYaw: " + to_string(currYaw));
-		cvarManager->log("goalYaw: " + to_string(goalYaw));
 
 		if (freeze && (!util::isInRotRange(finalRot, targetRot, targetMargin) || !util::isInRotRange(relativeRot, targetRot, targetMargin)))
 		{

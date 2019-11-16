@@ -88,8 +88,6 @@ void TurnExercise::analyzeTurn(TurningRecording* rec)
 		currentInput = input;
 	}
 
-	cvarManager->log("# segments: " + to_string(rec->segments.size()));
-
 	Vector2 firstVec = rec->points.front();
 	Vector2 lastVec = rec->points.back();
 

@@ -14,6 +14,7 @@ RGBA getColor(bool boost, bool powerslide, bool steer, bool showBoost, bool show
 	char green = (showPowerslide && powerslide) ? (char)255 : 0;
 	char blue = (showSteer && steer) ? (char)255 : 0;
 
+	// swap white and black
 	if (red == 0 && green == 0 && blue == 0)
 	{
 		red = 255;

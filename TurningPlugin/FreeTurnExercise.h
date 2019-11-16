@@ -11,7 +11,6 @@ class FreeTurnExercise : public TurnExercise
 private:
 	Rotator startRot;
 	Rotator finalRot;
-	Rotator goalRot;
 	Rotator lastRot;
 	int ticksWithSameRot;
 	bool isTurning;

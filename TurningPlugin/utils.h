@@ -3,10 +3,7 @@
 
 namespace util {
     CarWrapper getCar(std::shared_ptr<GameWrapper> game);
-    Rotator getCarRotation(std::shared_ptr<GameWrapper> game);
-
-    BallWrapper getBall(std::shared_ptr<GameWrapper> game);
-    Vector getBallLocation(std::shared_ptr<GameWrapper> game);
+	BallWrapper getBall(std::shared_ptr<GameWrapper> game);
 
     Rotator turnClockwise(Rotator rot, int angle);
 

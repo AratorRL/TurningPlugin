@@ -82,7 +82,6 @@ void TurningPlugin::onLoad()
 	}, "", PERMISSION_ALL);
 
 	gameWrapper->HookEvent("Function GameEvent_TrainingEditor_TA.Countdown.BeginState", [this](std::string eventName) {
-		cvarManager->log("custom training init");
 		if (cvarManager->getCvar("turn_customtraining").getBoolValue())
 		{
 			cvarManager->executeCommand("turn_start_customtraining");
@@ -140,13 +139,10 @@ void TurningPlugin::onLoad()
 			cvarManager->executeCommand("turn_clear_exercise");
 		}
 	});
-
-
+	
 
 	// update plugins tab
 	cvarManager->executeCommand("cl_settings_refreshplugins");
-	
-
 }
 
 void TurningPlugin::onUnload()

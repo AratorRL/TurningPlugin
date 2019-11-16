@@ -27,8 +27,7 @@ void CustomTrainingTurnExercise::OnResetRound()
 }
 
 void CustomTrainingTurnExercise::reset()
-{
-	
+{	
 	this->currRecordingBuffer = 0;
 
 	this->isActive = true;

@@ -15,7 +15,6 @@ private:
 	Rotator targetRot;
 	int targetMargin;
 	Rotator lastRot;
-	int ticksWithSameRot;
 	bool isTurning;
 	bool hitBall;
 	bool isDriving;

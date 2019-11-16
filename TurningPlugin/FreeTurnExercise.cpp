@@ -34,7 +34,7 @@ void FreeTurnExercise::tick()
 {
 	if (this->isActive)
 	{
-		Rotator currentRot = util::getCarRotation(game);
+		Rotator currentRot = util::getCar(game).GetRotation();
 
 		ControllerInput input = util::getCar(game).GetInput();
 		if (!isTurning && input.Steer != 0)
@@ -42,7 +42,6 @@ void FreeTurnExercise::tick()
 			isTurning = true;
 			this->startRot = currentRot;
 			this->lastRot = currentRot;
-			this->goalRot = util::turnClockwise(startRot, 16384);
 			this->ticksWithSameRot = 0;
 			this->getCurrentRecording()->reset();
 		}

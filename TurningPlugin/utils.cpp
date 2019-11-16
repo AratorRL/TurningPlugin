@@ -8,20 +8,10 @@ CarWrapper util::getCar(std::shared_ptr<GameWrapper> game)
     return server.GetGameCar();
 }
 
-Rotator util::getCarRotation(std::shared_ptr<GameWrapper> game)
-{
-    return getCar(game).GetRotation();
-}
-
 BallWrapper util::getBall(std::shared_ptr<GameWrapper> game)
 {
     ServerWrapper server = game->GetGameEventAsServer();
     return server.GetBall();
-}
-
-Vector util::getBallLocation(std::shared_ptr<GameWrapper> game)
-{
-    return getBall(game).GetLocation();
 }
 
 string util::vecToString(Vector v)
@@ -45,9 +35,7 @@ Rotator util::turnClockwise(Rotator rot, int angle)
 
 bool util::isInYawRange(int currYaw, int goalYaw, int range)
 {
-    // yaw range: -32768 to +32767
-	
-	// make the difference is < 65536
+    // yaw range: -32768 to +32767	
 	while (abs(currYaw - goalYaw) >= 32768)
 	{
 		if (currYaw < goalYaw)

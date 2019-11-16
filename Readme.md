@@ -10,10 +10,11 @@ Plugin for BakkesMod that helps with practicing (precise) turning on the ground.
 
 
 ## Modes
-In freeplay, there are two modes: `fixed turn` and `free roam`. Choose the mode in the plugin settings menu (F2->Plugins->Turning Plugin).
+In freeplay, there are two modes: `Fixed turn` and `Free roam`. Choose the mode in the plugin settings menu (F2->Plugins->Turning Plugin).
 ### Fixed turn
 The ball spawns in the center of the field, and the car starts at a fixed location relative to it. The goal is to hit the ball from the right angle, indicated by lines leading towards the ball.
 When the ball is hit, a graph is shown, visualizing the path the car took on the ground. Different colors indicate the combination of controller/keyboard inputs held during that segment of the path. The numbers next to them are the number of physics ticks this input segment lasted. (There are exactly 120 ticks in one second).
+Reset the shot with the `turn_reset` command. The easiest way to do this is to bind it to a button (F2->Bindings), e.g. one of the dpad buttons.
 
 The settings menu (F2->Plugins->Turning Plugin) provides the following configuration options:
 - Starting location, orientation and speed of the car

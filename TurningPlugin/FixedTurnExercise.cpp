@@ -35,7 +35,7 @@ void FixedTurnExercise::reset()
 
     float x = cvarManager->getCvar("turn_fixed_x").getFloatValue();
     float y = cvarManager->getCvar("turn_fixed_y").getFloatValue();
-    car.SetLocation({ x, y, 50 });
+    car.SetLocation({ x, y, 40 });
 
     float yaw = cvarManager->getCvar("turn_fixed_rot").getFloatValue();
     int unrealYaw = (int)((yaw - 90) / 180 * 32768);

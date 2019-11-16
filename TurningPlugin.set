@@ -9,8 +9,8 @@ Turning Plugin
 5|Car boost amount|turn_fixed_boost|0|100
 4|Target angle|turn_fixed_targetrot|-180|180
 4|Target angle accuracy|turn_fixed_targetmargin|0|180
-1|Freeze if ball hit with incorrect angle|turn_fixed_freeze
 4|Ball start speed|turn_fixed_ballspeed|0|2300
+1|Freeze if ball hit with incorrect angle|turn_fixed_freeze
 8|
 9|Free roam settings:
 5|Number of ticks driving straight before turn ends|turn_free_straight_treshold|0|240

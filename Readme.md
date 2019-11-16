@@ -24,10 +24,12 @@ The settings menu (F2->Plugins->Turning Plugin) provides the following configura
 - Whether to display turning graph
 - Graph scale and location, and kinds of input to distinguish with colors
 
+Currently there is no randomization of the initial state of the car and ball. The focus is on perfecting a fixed turning scenario by looking at the exact number of frames you used various inputs. Randomization might be added in a later release, though.
+
 ### Free roam
 A graph visualizing the turning path is shown after each turn while driving in freeplay. A turn is considered to have ended after driving straight for 30 physics ticks by default. This number can be changed in the settings menu.
 
 ### Custom training
-If enabled in the settings menu, a turning graph is also shown after hitting the ball in a custom training shot. This is most relevant in training packs for ground shots, where you might want to practice the perfect turn into the ball.
+If enabled in the settings menu, a turning graph is also shown after hitting the ball in a custom training shot. This is most relevant in training packs for ground shots, where you might want to practice the perfect turn into the ball. It currently does not yet support blocking hits from incorrect angles.
 
 Contact: [BakkesMod discord](http://discord.gg/HsM6kAR) or DM @Arator#5686

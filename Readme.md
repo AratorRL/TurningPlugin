@@ -1,6 +1,6 @@
 # Turning plugin
 
-Plugin for bakkesmod that helps with practicing (precise) turning on the ground.
+Plugin for BakkesMod that helps with practicing (precise) turning on the ground.
 
 #### Main features:
 - Lets you practice ground turning by only allowing hitting the ball from a certain angle.
@@ -29,4 +29,4 @@ A graph visualizing the turning path is shown after each turn while driving in f
 ### Custom training
 If enabled in the settings menu, a turning graph is also shown after hitting the ball in a custom training shot. This is most relevant in training packs for ground shots, where you might want to practice the perfect turn into the ball.
 
-Contact: [BakkesMod discord](discord.gg/HsM6kAR) or DM @Arator#5686
+Contact: [BakkesMod discord](http;//discord.gg/HsM6kAR) or DM @Arator#5686

@@ -9,19 +9,19 @@
 class FreeTurnExercise : public TurnExercise
 {
 private:
-	Rotator startRot;
-	Rotator finalRot;
-	Rotator lastRot;
-	int ticksWithSameRot;
-	bool isTurning;
+    Rotator startRot;
+    Rotator finalRot;
+    Rotator lastRot;
+    int ticksWithSameRot;
+    bool isTurning;
 
 
 public:
-	FreeTurnExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager);
+    FreeTurnExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager);
 
-	void init() override;
-	void reset() override;
-	void tick() override;
-	void end() override;
-	void clear() override;
+    void init() override;
+    void reset() override;
+    void tick() override;
+    void end() override;
+    void clear() override;
 };

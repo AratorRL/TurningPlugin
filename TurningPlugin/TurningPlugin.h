@@ -13,16 +13,16 @@ public:
     virtual void onLoad();
     virtual void onUnload();
 
-	FreeTurnExercise* freeTurnExercise;
-	FixedTurnExercise* fixedTurnExercise;
-	CustomTrainingTurnExercise* customTrainingTurnExercise;
+    FreeTurnExercise* freeTurnExercise;
+    FixedTurnExercise* fixedTurnExercise;
+    CustomTrainingTurnExercise* customTrainingTurnExercise;
 
-	FreeTurnExercise* getFreeTurnExercise();
-	FixedTurnExercise* getFixedTurnExercise();
-	CustomTrainingTurnExercise* getCustomTrainingTurnExercise();
+    FreeTurnExercise* getFreeTurnExercise();
+    FixedTurnExercise* getFixedTurnExercise();
+    CustomTrainingTurnExercise* getCustomTrainingTurnExercise();
 
-	TurnExercise* currentExercise;
+    TurnExercise* currentExercise;
 
 private:
-	void switchToExercise(TurnExercise* exercise);
+    void switchToExercise(TurnExercise* exercise);
 };

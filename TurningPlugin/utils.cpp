@@ -35,14 +35,14 @@ Rotator util::turnClockwise(Rotator rot, int angle)
 
 bool util::isInYawRange(int currYaw, int goalYaw, int range)
 {
-    // yaw range: -32768 to +32767	
-	while (abs(currYaw - goalYaw) >= 32768)
-	{
-		if (currYaw < goalYaw)
-			currYaw += 65536;
-		else
-			goalYaw += 65536;
-	}
+    // yaw range: -32768 to +32767    
+    while (abs(currYaw - goalYaw) >= 32768)
+    {
+        if (currYaw < goalYaw)
+            currYaw += 65536;
+        else
+            goalYaw += 65536;
+    }
     return (currYaw >= goalYaw - range) && (currYaw <= goalYaw + range);
 }
 
@@ -56,27 +56,27 @@ bool util::isInRotRange(Rotator currRot, Rotator goalRot, int range)
 
 bool util::isInRange(Vector relativeLoc, Rotator targetRot, int range)
 {
-	float angle = targetRot.Yaw * M_PI / 32768 - M_PI / 2;
+    float angle = targetRot.Yaw * M_PI / 32768 - M_PI / 2;
 }
 
 Vector2 util::rotateVec2(Vector2F vec, float angle)
 {
-	int x = (int)((float)vec.X * cos(angle) - (float)vec.Y * sin(angle));
-	int y = (int)((float)vec.X * sin(angle) + (float)vec.Y * cos(angle));
-	return Vector2{ x, y };
+    int x = (int)((float)vec.X * cos(angle) - (float)vec.Y * sin(angle));
+    int y = (int)((float)vec.X * sin(angle) + (float)vec.Y * cos(angle));
+    return Vector2{ x, y };
 }
 
 void util::drawThiccLine(CanvasWrapper cw, Vector2 start, Vector2 end)
 {
-	for (int i = -1; i <= 1; i++)
-	{
-		for (int j = -1; j <= 1; j++)
-		{
-			Vector2 s = { start.X + i, start.Y + j };
-			Vector2 e = { end.X + i, end.Y + j };
-			cw.DrawLine(s, e);
-		}
-	}
+    for (int i = -1; i <= 1; i++)
+    {
+        for (int j = -1; j <= 1; j++)
+        {
+            Vector2 s = { start.X + i, start.Y + j };
+            Vector2 e = { end.X + i, end.Y + j };
+            cw.DrawLine(s, e);
+        }
+    }
 }
 
 void util::hookPhysicsTick(std::shared_ptr<GameWrapper> game, std::function<void(std::string eventName)> callback)

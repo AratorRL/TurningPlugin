@@ -3,43 +3,43 @@
 
 struct TurningSnapshot
 {
-	Vector location;
-	Rotator rotation;
+    Vector location;
+    Rotator rotation;
 
-	float throttle;
-	float steer;
-	bool boost;
-	bool powerslide;
+    float throttle;
+    float steer;
+    bool boost;
+    bool powerslide;
 };
 
 struct TurningSegment
 {
-	int startIndex;
-	int inputType;
+    int startIndex;
+    int inputType;
 };
 
 struct PointsBoundary {
-	int minX;
-	int maxX;
-	int minY;
-	int maxY;
+    int minX;
+    int maxX;
+    int minY;
+    int maxY;
 };
 
 class TurningRecording
 {
 public:
-	std::vector<TurningSnapshot> snapshots;
-	std::vector<Vector2> points;
-	PointsBoundary pbound;
-	std::vector<TurningSegment> segments;
-	bool isTurningLeft;
+    std::vector<TurningSnapshot> snapshots;
+    std::vector<Vector2> points;
+    PointsBoundary pbound;
+    std::vector<TurningSegment> segments;
+    bool isTurningLeft;
 
-	void reset();
+    void reset();
 };
 
 struct RGBA
 {
-	char R, G, B, A;
+    char R, G, B, A;
 };
 
 RGBA getColor(bool boost, bool powerslide, bool steer, bool showBoost, bool showPowerslide, bool showSteer);

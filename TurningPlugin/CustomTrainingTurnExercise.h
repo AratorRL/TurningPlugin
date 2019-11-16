@@ -10,24 +10,24 @@
 class CustomTrainingTurnExercise : public TurnExercise
 {
 private:
-	Rotator startRot;
-	Rotator finalRot;
-	Rotator lastRot;
-	int ticksWithSameRot;
-	bool isTurning;
-	bool hitBall;
-	bool isDriving;
-	bool hasJustReset;
+    Rotator startRot;
+    Rotator finalRot;
+    Rotator lastRot;
+    int ticksWithSameRot;
+    bool isTurning;
+    bool hitBall;
+    bool isDriving;
+    bool hasJustReset;
 
 public:
-	CustomTrainingTurnExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager);
+    CustomTrainingTurnExercise(std::shared_ptr<GameWrapper> game, std::shared_ptr<CVarManagerWrapper> cvarManager);
 
-	void init() override;
-	void reset() override;
-	void tick() override;
-	void end() override;
-	void clear() override;
+    void init() override;
+    void reset() override;
+    void tick() override;
+    void end() override;
+    void clear() override;
 
-	void OnHitBall();
-	void OnResetRound();
+    void OnHitBall();
+    void OnResetRound();
 };

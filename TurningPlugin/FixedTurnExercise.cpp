@@ -100,6 +100,24 @@ void FixedTurnExercise::OnHitBall(CarWrapper caller, void* params, std::string e
 
 		bool freeze = cvarManager->getCvar("turn_fixed_freeze").getBoolValue();
 
+		cvarManager->log("final rot: " + to_string(finalRot.Yaw));
+		cvarManager->log("target rot: " + to_string(targetRot.Yaw));
+
+		int currYaw = finalRot.Yaw;
+		int goalYaw = targetRot.Yaw;
+
+		// make the difference is < 65536
+		while (abs(currYaw - goalYaw) >= 32768)
+		{
+			if (currYaw < goalYaw)
+				currYaw += 65536;
+			else
+				goalYaw += 65536;
+		}
+
+		cvarManager->log("currYaw: " + to_string(currYaw));
+		cvarManager->log("goalYaw: " + to_string(goalYaw));
+
 		if (freeze && (!util::isInRotRange(finalRot, targetRot, targetMargin) || !util::isInRotRange(relativeRot, targetRot, targetMargin)))
 		{
 			freezeAll();
@@ -175,12 +193,15 @@ void FixedTurnExercise::visualize(CanvasWrapper canvas)
 		start.Z = 0;
 		Vector end = { 200, 0, 0 };
 
-		float angle = this->targetMargin * M_PI / 32768;
-		float x = end.X * cos(angle) - (float)end.Y * sin(angle);
-		float y = end.X * sin(angle) + (float)end.Y * cos(angle);
+		float angle1 = -1 * ((float)(this->targetRot.Yaw + this->targetMargin) * M_PI / 32768 + (M_PI / 2));
+		float angle2 = -1 * ((float)(this->targetRot.Yaw - this->targetMargin) * M_PI / 32768 + (M_PI / 2));
+		float x1 = end.X * cos(angle1) - (float)end.Y * sin(angle1);
+		float y1 = end.X * sin(angle1) + (float)end.Y * cos(angle1);
+		float x2 = end.X * cos(angle2) - (float)end.Y * sin(angle2);
+		float y2 = end.X * sin(angle2) + (float)end.Y * cos(angle2);
 
-		Vector end1 = start + Vector{ y, x, 0 };
-		Vector end2 = start + Vector{ -y, x, 0 };
+		Vector end1 = start + Vector{ y1, x1, 0 };
+		Vector end2 = start + Vector{ y2, x2, 0 };
 
 		Vector2 end1Proj = canvas.Project(end1);
 		Vector2 end2Proj = canvas.Project(end2);

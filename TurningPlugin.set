@@ -6,16 +6,17 @@ Turning Plugin
 4|Car start location Y|turn_fixed_y|-2000|2000
 4|Car start angle|turn_fixed_rot|-180|180
 4|Car start speed|turn_fixed_carspeed|0|2300
-4|Ball start speed|turn_fixed_ballspeed|0|2300
 5|Car boost amount|turn_fixed_boost|0|100
 4|Target angle|turn_fixed_targetrot|-180|180
 4|Target angle accuracy|turn_fixed_targetmargin|0|180
 1|Freeze if ball hit with incorrect angle|turn_fixed_freeze
+4|Ball start speed|turn_fixed_ballspeed|0|2300
 8|
 9|Free roam settings:
 5|Number of ticks driving straight before turn ends|turn_free_straight_treshold|0|240
 8|
 9|Graph settings:
+1|Show graph|turn_graph_enabled
 4|Graph scale|turn_graph_scale|0|600
 5|Graph location X|turn_graph_x|0|1920
 5|Graph location Y|turn_graph_y|0|1080
@@ -26,4 +27,4 @@ Turning Plugin
 1|Color steer|turn_graph_steer
 8|
 9|Custom training settings:
-1|Show turning graph after ball hit om custom training|turn_customtraining
+1|Show turning graph after ball hit in custom training|turn_customtraining

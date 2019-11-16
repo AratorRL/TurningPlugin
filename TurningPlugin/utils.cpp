@@ -46,10 +46,15 @@ Rotator util::turnClockwise(Rotator rot, int angle)
 bool util::isInYawRange(int currYaw, int goalYaw, int range)
 {
     // yaw range: -32768 to +32767
-
-    currYaw += 100000;
-    goalYaw += 100000;
-
+	
+	// make the difference is < 65536
+	while (abs(currYaw - goalYaw) >= 32768)
+	{
+		if (currYaw < goalYaw)
+			currYaw += 65536;
+		else
+			goalYaw += 65536;
+	}
     return (currYaw >= goalYaw - range) && (currYaw <= goalYaw + range);
 }
 

@@ -98,6 +98,9 @@ void TurnExercise::analyzeTurn(TurningRecording* rec)
 
 void TurnExercise::visualize(CanvasWrapper canvas)
 {
+	if (!cvarManager->getCvar("turn_graph_enabled").getBoolValue())
+		return;
+	
 	TurningRecording* recording = this->getLastRecording();
 
 	if (recording->snapshots.size() <= 0)
@@ -125,6 +128,10 @@ void TurnExercise::visualize(CanvasWrapper canvas)
 	bool colorBoost = cvarManager->getCvar("turn_graph_boost").getBoolValue();
 	bool colorPowerslide = cvarManager->getCvar("turn_graph_powerslide").getBoolValue();
 	bool colorSteer = cvarManager->getCvar("turn_graph_steer").getBoolValue();
+
+	Vector2 legendXY = { drawingX - 200, drawingY + 30 };
+
+	drawLegend(canvas, legendXY, colorBoost, colorPowerslide, colorSteer);
 
 	for (int i = 1; i < recording->points.size(); i++)
 	{

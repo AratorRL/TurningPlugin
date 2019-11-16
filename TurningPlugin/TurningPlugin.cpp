@@ -114,18 +114,23 @@ void TurningPlugin::onLoad()
 	cvarManager->registerCvar("turn_fixed_x", "-1000", "X coord of starting position relative to the ball", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_y", "-500", "Y coord of starting position relative to the ball", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_rot", "160", "Starting orientation", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_fixed_carspeed", "500", "Starting speed of car", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_boost", "100", "Starting boost amount", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_targetrot", "0", "Target orientation", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_targetmargin", "20", "Target orientation margin", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_ballspeed", "500", "Starting speed of ball", true, false, 0, false, 0, true);
-	cvarManager->registerCvar("turn_fixed_carspeed", "500", "Starting speed of car", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_fixed_freeze", "1", "Freeze the car and ball if ball not approached with the correct angle", true, false, 0, false, 0, true);
+	
+	cvarManager->registerCvar("turn_free_straight_treshold", "30", "In free turn mode, number of ticks of driving straight before turn is considered to be finished", true, false, 0, false, 0, true);
 
+	cvarManager->registerCvar("turn_graph_enabled", "1", "Draw graph at end of turn", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_graph_scale", "200", "Size of turning graph", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_graph_x", "300", "X coordinate of turning graph", true, false, 0, false, 0, true);
 	cvarManager->registerCvar("turn_graph_y", "380", "Y coordinate of turning graph", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_graph_boost", "1", "Let color depend on boost being held or not", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_graph_powerslide", "1", "Let color depend on powerslide being held or not", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("turn_graph_steer", "1", "Let color depend on steering value being 0 or not", true, false, 0, false, 0, true);
 
-	cvarManager->registerCvar("turn_free_straight_treshold", "30", "In free turn mode, number of ticks of driving straight before turn is considered to be finished", true, false, 0, false, 0, true);
 	
 	cvarManager->registerCvar("turn_customtraining", "0", "Show turning graph after ball hit in custom training", true, false, 0, false, 0, true)
 		.addOnValueChanged([this](std::string oldValue, CVarWrapper cvar) {
@@ -137,9 +142,6 @@ void TurningPlugin::onLoad()
 	});
 
 
-	cvarManager->registerCvar("turn_graph_boost", "0", "Let color depend on boost being held or not", true, false, 0, false, 0, true);
-	cvarManager->registerCvar("turn_graph_powerslide", "0", "Let color depend on powerslide being held or not", true, false, 0, false, 0, true);
-	cvarManager->registerCvar("turn_graph_steer", "0", "Let color depend on steering value being 0 or not", true, false, 0, false, 0, true);
 
 	// update plugins tab
 	cvarManager->executeCommand("cl_settings_refreshplugins");

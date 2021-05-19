@@ -7,8 +7,8 @@ namespace util {
 
     Rotator turnClockwise(Rotator rot, int angle);
 
-    string vecToString(Vector v);
-    string rotToString(Rotator r);
+    std::string vecToString(Vector v);
+    std::string rotToString(Rotator r);
     bool isInYawRange(int currYaw, int goalYaw, int range);
     bool isInRotRange(Rotator currRot, Rotator goalRot, int range);
     bool isInRange(Vector relativeLoc, Rotator targetRot, int range);

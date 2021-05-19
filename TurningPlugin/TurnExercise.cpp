@@ -118,7 +118,7 @@ void TurnExercise::visualize(CanvasWrapper canvas)
 
     int width = recording->pbound.maxX - recording->pbound.minX;
     int height = recording->pbound.maxY - recording->pbound.minY;
-    float scale = (float)drawingScale / (float)max(width, height);
+    float scale = (float)drawingScale / (float)std::max(width, height);
 
     Vector2 lastPoint = recording->points.front();
     Vector2 lastCoord = origin;
@@ -144,7 +144,7 @@ void TurnExercise::visualize(CanvasWrapper canvas)
 
     canvas.SetPosition(Vector2{ drawingX + drawingScale / 2 - 40, drawingY + drawingScale + 20 });
     canvas.SetColor(255, 255, 255, 255);
-    canvas.DrawString("Total # ticks: " + to_string(recording->points.size()));
+    canvas.DrawString("Total # ticks: " + std::to_string(recording->points.size()));
 
     for (int i = 0; i < recording->segments.size(); i++)
     {
@@ -167,6 +167,6 @@ void TurnExercise::visualize(CanvasWrapper canvas)
             coord.X -= 20;
 
         canvas.SetPosition(coord);
-        canvas.DrawString(to_string(nextIndex - seg.startIndex), 1.0, 1.0);
+        canvas.DrawString(std::to_string(nextIndex - seg.startIndex), 1.0, 1.0);
     }
 }

@@ -14,14 +14,14 @@ BallWrapper util::getBall(std::shared_ptr<GameWrapper> game)
     return server.GetBall();
 }
 
-string util::vecToString(Vector v)
+std::string util::vecToString(Vector v)
 {
-    return "(" + to_string(v.X) + ", " + to_string(v.Y) + ", " + to_string(v.Z) + ")";
+    return "(" + std::to_string(v.X) + ", " + std::to_string(v.Y) + ", " + std::to_string(v.Z) + ")";
 }
 
-string util::rotToString(Rotator r)
+std::string util::rotToString(Rotator r)
 {
-    return "(" + to_string(r.Pitch) + ", " + to_string(r.Yaw) + ", " + to_string(r.Roll) + ")";
+    return "(" + std::to_string(r.Pitch) + ", " + std::to_string(r.Yaw) + ", " + std::to_string(r.Roll) + ")";
 }
 
 Rotator util::turnClockwise(Rotator rot, int angle)
